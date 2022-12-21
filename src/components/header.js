@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "./element";
 import logo from "../assets/image/logo.png";
-import { FaServer, FaWallet, FaTimes } from "react-icons/fa";
+import { FaServer,  FaTimes } from "react-icons/fa";
 import { useState, useRef } from "react";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { Link } from "react-router-dom";
@@ -95,7 +95,7 @@ const MenuContent2 = styled(Column)`
 
 const DropdownMenu = styled.div`
   position: absolute;
-  top: 120px;
+  top: 105px;
   z-index: 3;
   padding: 50px;
   width: 200px;
@@ -103,7 +103,6 @@ const DropdownMenu = styled.div`
   height: 100vh;
   backdrop-filter: blur(46px);
   box-shadow: rgb(173 181 189 / 12%) 5px -8px 16px;
-  transition: all 0.5s ease-in-out 0s;
   font-size: 16px !important;
   background-color: white;
 `;

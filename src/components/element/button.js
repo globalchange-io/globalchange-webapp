@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-const Button = ({ children, props }) => {
-  return <Wrapper>{children}</Wrapper>;
+const Button = ({ children, onClick }) => {
+  return <Wrapper onClick={onClick}>{children}</Wrapper>;
 };
 const Wrapper = styled.button`
   background: #1b5e76;
