@@ -2,10 +2,12 @@ import { useState } from "react";
 import styled from "styled-components";
 import { DefaultImage, Row } from "./element";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { arrayKill } from "../utills";
 
 const CardContent = (props) => {
   const [counter, setCounter] = useState(0);
-  const { setTotal } = props;
+  const { total, setTotal, crease } = props;
+
   return (
     <TextContainer>
       {props.name}GC <DefaultImage src={props.src} />
@@ -13,7 +15,7 @@ const CardContent = (props) => {
         <FaPlus
           onClick={() => {
             setCounter(counter + 1);
-            setTotal(counter + 1);
+            crease(props.name, (counter + 1) * props.name);
           }}
         />
         <input
@@ -21,13 +23,17 @@ const CardContent = (props) => {
           type="number"
           onChange={(e) => {
             setCounter(+e.target.value);
-            setTotal(+e.target.value);
+            arrayKill(total, props.name, "name");
+            setTotal([
+              ...total,
+              { name: props.name, value: e.target.value * props.name },
+            ]);
           }}
         />
         <FaMinus
           onClick={() => {
             setCounter(counter - 1);
-            setTotal(counter - 1);
+            crease(props.name, (counter - 1) * props.name);
           }}
         />
       </CounterContainer>

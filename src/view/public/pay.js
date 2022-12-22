@@ -2,14 +2,18 @@ import styled from "styled-components";
 import { Column, DefaultImage, Row } from "../../components/element";
 import Card1 from "../../assets/image/card1.png";
 import Card2 from "../../assets/image/card2.png";
+import Card3 from "../../assets/image/card3.png";
+import Card4 from "../../assets/image/card4.png";
+import Card5 from "../../assets/image/card5.png";
+import Card6 from "../../assets/image/card6.png";
+import Card7 from "../../assets/image/card7.png";
 import Newgc from "../../assets/image/newGC.png";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
-import SelectBox from "../../components/element/select";
 import Mygc from "../../components/mygc";
 import Map from "../../components/map";
 import FeedIndex from "../../components/Feed";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Keypair,
   Server,
@@ -20,17 +24,33 @@ import {
   Memo,
 } from "stellar-sdk";
 import axios from "axios";
-import { useEffect } from "react";
 import { Buffer } from "buffer";
+import SelectBox from "../../components/select";
+import { arrayKill } from "../../utills";
+
 window.Buffer = Buffer;
+
 const Pay = () => {
   const [accountKey, setAccountKey] = useState();
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState([]);
   const [xlmusd, setXlmusd] = useState(0);
+  const [nonprofit, setNonprofit] = useState([
+    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
+    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
+    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
+    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
+    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
+  ]);
   const card = [
     { name: 1, src: Card1 },
     { name: 5, src: Card2 },
+    { name: 10, src: Card3 },
+    { name: 20, src: Card4 },
+    { name: 50, src: Card5 },
+    { name: 100, src: Card6 },
+    { name: 1000, src: Card7 },
   ];
+
   let bills = [];
 
   useEffect(() => {
@@ -47,32 +67,81 @@ const Pay = () => {
       console.log(err);
     }
   };
-  const handleClick = async () => {
+
+  const crease = (name, counter) => {
+    arrayKill(total, name, "name");
+    setTotal([...total, { name: name, value: counter }]);
+  };
+  const send = async () => {
     const transaction = await mine();
     let mineSequence = transaction.transactionSequence;
-    let faceValueText = "1B GC ";
-    await mint(mineSequence, faceValueText);
+    console.log(mineSequence, "mine result");
+    for (const key in total) {
+      if (Object.hasOwnProperty.call(total, key)) {
+        const element = total[key];
+        for (let i = 0; i < element.value / element.name; i++) {
+          let faceValueText = element.name + " GC ";
+          await mint(mineSequence, faceValueText);
+        }
+      }
+    }
   };
-  const secretKey = "SBZXIK3A6WGV4SBQB3GM3DLKERU3OSFUJWDRNXMX2SRG4QABKBFOTDOU";
+  const handleClick = async () => {};
+
+  const secretKey = "SDBIEMHELAXCVXHVMYXN5IGIP2LGXML6FFJRVC5MZ3NK4EPBORTNDF2C";
+
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
-
+    let totalGC = 0;
+    total.map((item) => {
+      totalGC += item.value;
+    });
+    let totalUSD = (totalGC * (295.62 / 300)).toFixed(2);
     const sourceKeypair = Keypair.fromSecret(secretKey);
     const sourcePublicKey = sourceKeypair.publicKey();
-    const totalGC = 10;
     const totalXLM = ((totalGC * (295.62 / 300)) / xlmusd).toFixed(7);
+    alert(totalUSD + "totalusd");
+    alert(totalXLM + "totalXLM");
     let sendEachActual = totalXLM.toString();
     const server = new Server("https://horizon-testnet.stellar.org");
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
+
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.TESTNET,
     })
       .addOperation(
         Operation.payment({
-          destination:
-            "GA5JJZQUKFXQNXQPKUAG77LNJCKUKNSJTHPDFJ2LDPF4LM7LGQEJZACQ",
+          destination: nonprofit[0]?.address,
+          asset: Asset.native(),
+          amount: sendEachActual,
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[1]?.address,
+          asset: Asset.native(),
+          amount: sendEachActual,
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[2]?.address,
+          asset: Asset.native(),
+          amount: sendEachActual,
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[3]?.address,
+          asset: Asset.native(),
+          amount: sendEachActual,
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[4]?.address,
           asset: Asset.native(),
           amount: sendEachActual,
         })
@@ -80,12 +149,12 @@ const Pay = () => {
       .setTimeout(30)
       .addMemo(Memo.text("GlobalChange " + totalGC))
       .build();
+
     transaction.sign(sourceKeypair);
 
     try {
       const transactionResult = await server.submitTransaction(transaction);
       console.log(JSON.stringify(transactionResult, null, 2));
-      console.log(transactionResult._links.transaction.href, "ssa");
       return {
         transactionId: transactionResult.id,
         transactionSequence: transactionResult.source_account_sequence,
@@ -97,7 +166,6 @@ const Pay = () => {
   };
 
   const mint = async (mineSequence, faceValueText) => {
-    console.log(mineSequence, faceValueText);
     const sourceKeypair = Keypair.fromSecret(secretKey);
     const sourcePublicKey = sourceKeypair.publicKey();
     const server = new Server("https://horizon-testnet.stellar.org");
@@ -109,8 +177,35 @@ const Pay = () => {
     })
       .addOperation(
         Operation.payment({
-          destination:
-            "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A",
+          destination: nonprofit[0]?.address,
+          asset: Asset.native(),
+          amount: "0.0000001",
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[1]?.address,
+          asset: Asset.native(),
+          amount: "0.0000001",
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[2]?.address,
+          asset: Asset.native(),
+          amount: "0.0000001",
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[3]?.address,
+          asset: Asset.native(),
+          amount: "0.0000001",
+        })
+      )
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[4]?.address,
           asset: Asset.native(),
           amount: "0.0000001",
         })
@@ -132,7 +227,6 @@ const Pay = () => {
         transactionLink: transactionResult._links.transaction.href,
         ledger: transactionResult.ledger,
       });
-      console.log(bills);
       console.log(transactionResult);
       console.log("face value: " + faceValueText);
       bills.forEach((item) => console.log(item, "bills"));
@@ -147,6 +241,7 @@ const Pay = () => {
       console.log(e);
     }
   };
+
   return (
     <Wrapper>
       <Dashboard>
@@ -225,11 +320,13 @@ const Pay = () => {
         </Text>
         <CardContainer style={{ alignItems: "flex-start" }}>
           <Col>
-            {card.map((item) => (
+            {card.map((item, key) => (
               <CardContent
                 name={item.name}
                 src={item.src}
                 total={total}
+                key={key}
+                crease={crease}
                 setTotal={setTotal}
               />
             ))}
@@ -242,11 +339,13 @@ const Pay = () => {
                 style={{ justifyContent: "space-between", width: "100%" }}
               >
                 <Col>
-                  <SelectBox label="Nonprofit" />
-                  <SelectBox label="Nonprofit" />
-                  <SelectBox label="Nonprofit" />
-                  <SelectBox label="Nonprofit" />
-                  <SelectBox label="Nonprofit" />
+                  {[1, 2, 3, 4, 5].map((item, key) => (
+                    <SelectBox
+                      key={key}
+                      nonprofit={nonprofit}
+                      setNonprofit={setNonprofit}
+                    />
+                  ))}
                 </Col>
                 <TextColor2>
                   Option: you can enter alternate nonprofit addresses directly
@@ -258,6 +357,7 @@ const Pay = () => {
               <DefaultImage src={Newgc} />
             </Col>
             <Text>3. Enter you connect wallet (Freighter)</Text>
+            <Button onClick={send}>Send</Button>
           </Col2>
         </CardContainer>
       </Dashboard2>
@@ -430,4 +530,5 @@ const TextContainer2 = styled(Col)`
   gap: 10px;
   height: 100px;
 `;
+
 export default Pay;
