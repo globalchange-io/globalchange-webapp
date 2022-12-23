@@ -34,13 +34,7 @@ const Pay = () => {
   const [accountKey, setAccountKey] = useState();
   const [total, setTotal] = useState([]);
   const [xlmusd, setXlmusd] = useState(0);
-  const [nonprofit, setNonprofit] = useState([
-    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-    { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-  ]);
+  const [nonprofit, setNonprofit] = useState([]);
   const card = [
     { name: 1, src: Card1 },
     { name: 5, src: Card2 },
@@ -73,15 +67,19 @@ const Pay = () => {
     setTotal([...total, { name: name, value: counter }]);
   };
   const send = async () => {
-    const transaction = await mine();
-    let mineSequence = transaction.transactionSequence;
-    console.log(mineSequence, "mine result");
-    for (const key in total) {
-      if (Object.hasOwnProperty.call(total, key)) {
-        const element = total[key];
-        for (let i = 0; i < element.value / element.name; i++) {
-          let faceValueText = element.name + " GC ";
-          await mint(mineSequence, faceValueText);
+    if (nonprofit.length < 5) {
+      alert("please select 5 nonprofit");
+    } else {
+      const transaction = await mine();
+      let mineSequence = transaction.transactionSequence;
+      console.log(mineSequence, "mine result");
+      for (const key in total) {
+        if (Object.hasOwnProperty.call(total, key)) {
+          const element = total[key];
+          for (let i = 0; i < element.value / element.name; i++) {
+            let faceValueText = element.name + " GC ";
+            await mint(mineSequence, faceValueText);
+          }
         }
       }
     }
@@ -96,13 +94,14 @@ const Pay = () => {
     total.map((item) => {
       totalGC += item.value;
     });
+
     let totalUSD = (totalGC * (295.62 / 300)).toFixed(2);
     const sourceKeypair = Keypair.fromSecret(secretKey);
     const sourcePublicKey = sourceKeypair.publicKey();
     const totalXLM = ((totalGC * (295.62 / 300)) / xlmusd).toFixed(7);
     alert(totalUSD + "totalusd");
     alert(totalXLM + "totalXLM");
-    let sendEachActual = totalXLM.toString();
+    let sendEachActual = (totalXLM / 5).toString();
     const server = new Server("https://horizon-testnet.stellar.org");
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();

@@ -4,6 +4,7 @@ import { arrayKill } from "../utills";
 import { Row } from "./element";
 
 const nonprofitDetail = [
+  { name: "none", value: "none" },
   {
     name: "Bali Food Bank",
     value: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A",
