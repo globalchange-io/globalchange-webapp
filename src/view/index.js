@@ -1,11 +1,11 @@
-import { BrowserRouter as Router, Route } from "react-router-dom";
 import Layout from "../layout";
+import { BrowserRouter } from "react-router-dom";
 
 const View = () => {
   return (
-    <Router>
-      <Route path="/" component={Layout} />
-    </Router>
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
   );
 };
 

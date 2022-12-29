@@ -27,14 +27,20 @@ import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
 import { arrayKill } from "../../utills";
+import sha256 from "crypto-js/sha256";
+import { useNavigate } from "react-router-dom";
+import { Public_Special } from "../../config";
 
 window.Buffer = Buffer;
 
 const Pay = () => {
+  const navigate = useNavigate();
   const [accountKey, setAccountKey] = useState();
   const [total, setTotal] = useState([]);
   const [xlmusd, setXlmusd] = useState(0);
   const [nonprofit, setNonprofit] = useState([]);
+  const [checkbill, setCheckBill] = useState();
+
   const card = [
     { name: 1, src: Card1 },
     { name: 5, src: Card2 },
@@ -66,6 +72,7 @@ const Pay = () => {
     arrayKill(total, name, "name");
     setTotal([...total, { name: name, value: counter }]);
   };
+
   const send = async () => {
     if (nonprofit.length < 5) {
       alert("please select 5 nonprofit");
@@ -84,9 +91,44 @@ const Pay = () => {
       }
     }
   };
-  const handleClick = async () => {};
 
-  const secretKey = "SDBIEMHELAXCVXHVMYXN5IGIP2LGXML6FFJRVC5MZ3NK4EPBORTNDF2C";
+  const secretKey = "SALITYGIHL23YOY5ARSPSATHF7Q7WL3AEOGXICQQUH6LTGE6TU6XI6BS";
+  const sourceKeypair = Keypair.fromSecret(secretKey);
+  const sourcePublicKey = sourceKeypair.publicKey();
+  const server = new Server("https://horizon-testnet.stellar.org");
+
+  const handleClick = async () => {
+    server
+      .transactions()
+      .transaction(checkbill)
+      .call()
+      .then(async (res) => {
+        const ledgerhash = res.ledger_attr;
+        const memoname = res.memo.split(" ", 3);
+        server
+          .ledgers()
+          .ledger(ledgerhash)
+          .call()
+          .then(function (resp) {
+            const hash = sha256(res.ledger_attr + resp.hash).toString();
+            const numbersOnly = hash.replace(/[a-z]/gi, "");
+            alert(numbersOnly);
+            navigate(Public_Special, {
+              state: {
+                numbersOnly: numbersOnly,
+                checkbill: checkbill,
+                memoname: memoname[0],
+              },
+            });
+          })
+          .catch(function (err) {
+            console.error(err);
+          });
+      })
+      .catch(function (err) {
+        console.error(err);
+      });
+  };
 
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
@@ -96,15 +138,12 @@ const Pay = () => {
     });
 
     let totalUSD = (totalGC * (295.62 / 300)).toFixed(2);
-    const sourceKeypair = Keypair.fromSecret(secretKey);
-    const sourcePublicKey = sourceKeypair.publicKey();
+    const account = await server.loadAccount(sourcePublicKey);
+    const fee = await server.fetchBaseFee();
     const totalXLM = ((totalGC * (295.62 / 300)) / xlmusd).toFixed(7);
     alert(totalUSD + "totalusd");
     alert(totalXLM + "totalXLM");
-    let sendEachActual = (totalXLM / 5).toString();
-    const server = new Server("https://horizon-testnet.stellar.org");
-    const account = await server.loadAccount(sourcePublicKey);
-    const fee = await server.fetchBaseFee();
+    let sendEachActual = (totalXLM / 5).toFixed(7).toString();
 
     const transaction = new TransactionBuilder(account, {
       fee,
@@ -165,9 +204,6 @@ const Pay = () => {
   };
 
   const mint = async (mineSequence, faceValueText) => {
-    const sourceKeypair = Keypair.fromSecret(secretKey);
-    const sourcePublicKey = sourceKeypair.publicKey();
-    const server = new Server("https://horizon-testnet.stellar.org");
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
@@ -226,8 +262,11 @@ const Pay = () => {
         transactionLink: transactionResult._links.transaction.href,
         ledger: transactionResult.ledger,
       });
+
       console.log(transactionResult);
+
       console.log("face value: " + faceValueText);
+
       bills.forEach((item) => console.log(item, "bills"));
 
       return {
@@ -409,9 +448,9 @@ const Pay = () => {
         <Text>Enter bill’s serial number to check its status</Text>
         <ConnectWrapper>
           <>SN</>
-          <ConnectInput />
+          <ConnectInput onChange={(e) => setCheckBill(e.target.value)} />
         </ConnectWrapper>
-        <Button>Check Bill</Button>
+        <Button onClick={handleClick}>Check Bill</Button>
         <Title>Claim printed bill</Title>
         <TextContainer2>
           <>No account linked </>

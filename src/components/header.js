@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "./element";
 import logo from "../assets/image/logo.png";
-import { FaServer,  FaTimes } from "react-icons/fa";
+import { FaServer, FaTimes } from "react-icons/fa";
 import { useState, useRef } from "react";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { Link } from "react-router-dom";
@@ -65,7 +65,7 @@ const Wrapper = styled(Row)`
 `;
 const WrapperContent = styled(Row)`
   width: 100%;
-  padding: 0px 50px;
+  padding: 10px 50px;
   justify-content: space-between;
 `;
 const MenuContent = styled(Row)`

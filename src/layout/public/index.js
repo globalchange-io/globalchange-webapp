@@ -17,7 +17,6 @@ const PublicLayout = () => {
 const Wrapper = styled(Column)`
   justify-content: space-between;
   height: 100vh;
-  margin-top: 50px;
   width: 100%;
 `;
 const WrapperContent = styled(Column)`

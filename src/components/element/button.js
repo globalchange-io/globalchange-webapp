@@ -10,5 +10,8 @@ const Wrapper = styled.button`
   color: white;
   padding: 10px;
   width: 180px;
+  &:active {
+    background-color: #528193;
+  }
 `;
 export default Button;
