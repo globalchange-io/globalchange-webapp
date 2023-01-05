@@ -30,6 +30,8 @@ import { arrayKill } from "../../utills";
 import sha256 from "crypto-js/sha256";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
+import Test from "../../components/test";
+import layerGifOnImage from "../../components/pic";
 
 window.Buffer = Buffer;
 
@@ -52,7 +54,7 @@ const Pay = () => {
   ];
 
   let bills = [];
-
+  Test();
   useEffect(() => {
     getStellarPrice();
   }, []);
@@ -91,7 +93,10 @@ const Pay = () => {
       }
     }
   };
-
+  // layerGifOnImage(
+  //   "https://docs.google.com/spreadsheets/d/1QS8MdrRxLpSd3LmnBCPkvEWqEag95M9KOdilO-hD2xw/edit#gid=588497558",
+  //   Card1
+  // );
   const secretKey = "SALITYGIHL23YOY5ARSPSATHF7Q7WL3AEOGXICQQUH6LTGE6TU6XI6BS";
   const sourceKeypair = Keypair.fromSecret(secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
@@ -111,8 +116,9 @@ const Pay = () => {
           .call()
           .then(function (resp) {
             const hash = sha256(res.ledger_attr + resp.hash).toString();
-            const numbersOnly = hash.replace(/[a-z]/gi, "");
+            const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
             alert(numbersOnly);
+
             navigate(Public_Special, {
               state: {
                 numbersOnly: numbersOnly,
