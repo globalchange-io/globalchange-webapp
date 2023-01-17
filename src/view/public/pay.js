@@ -155,7 +155,6 @@ const Pay = () => {
           .then(function (resp) {
             const hash = sha256(res.ledger_attr + resp.hash).toString();
             const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
-            alert(numbersOnly);
 
             navigate(Public_Special, {
               state: {
@@ -178,8 +177,6 @@ const Pay = () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
-    alert(totalUSD + "totalusd");
-    alert(totalXLM + "totalXLM");
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.TESTNET,
