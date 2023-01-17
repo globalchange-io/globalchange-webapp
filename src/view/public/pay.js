@@ -7,7 +7,13 @@ import Card4 from "../../assets/image/card4.png";
 import Card5 from "../../assets/image/card5.png";
 import Card6 from "../../assets/image/card6.png";
 import Card7 from "../../assets/image/card7.png";
-import Newgc from "../../assets/image/newGC.png";
+import Card8 from "../../assets/image/card8.png";
+import Card9 from "../../assets/image/card9.png";
+import Card10 from "../../assets/image/card10.png";
+import Card11 from "../../assets/image/card11.png";
+import Card12 from "../../assets/image/card12.png";
+import Card13 from "../../assets/image/card13.png";
+import Card14 from "../../assets/image/card14.png";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
 import Mygc from "../../components/mygc";
@@ -32,16 +38,24 @@ import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import Test from "../../components/test";
 import layerGifOnImage from "../../components/pic";
+import { useAlert } from "react-alert";
+import Analog from "../../components/analog";
 
 window.Buffer = Buffer;
 
 const Pay = () => {
+  const alert = useAlert();
   const navigate = useNavigate();
   const [accountKey, setAccountKey] = useState();
   const [total, setTotal] = useState([]);
   const [xlmusd, setXlmusd] = useState(0);
   const [nonprofit, setNonprofit] = useState([]);
   const [checkbill, setCheckBill] = useState();
+  const [currentCPI, setCurrentCPI] = useState(0);
+  const [totalGC, setTotalGC] = useState(0);
+  const [totalUSD, setTotalUSD] = useState(0);
+  const [totalXLM, setTotalXML] = useState(0);
+  const [sendEachActual, setSendEachActual] = useState(0);
 
   const card = [
     { name: 1, src: Card1 },
@@ -51,24 +65,48 @@ const Pay = () => {
     { name: 50, src: Card5 },
     { name: 100, src: Card6 },
     { name: 1000, src: Card7 },
+    { name: "100k", src: Card7, value: 100000 },
+    { name: "1M", src: Card8, value: 1000000 },
+    { name: "1B", src: Card9, value: 1000000000 },
+    { name: 0.01, src: Card10 },
+    { name: 0.05, src: Card11 },
+    { name: 0.1, src: Card12 },
+    { name: 0.25, src: Card13 },
+    { name: 0.5, src: Card14 },
   ];
 
   let bills = [];
-  Test();
+  // Test();
   useEffect(() => {
     getStellarPrice();
   }, []);
 
   const getStellarPrice = async () => {
     try {
+      const res = await axios.get(
+        "https://data.nasdaq.com/api/v3/datasets/RATEINF/CPI_USA.json?api_key=VMRa7XxgZUEpe-Ps8Eg7"
+      );
+      setCurrentCPI(res.data.dataset.data[0][1]);
       const response = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd"
+        "https://api.coingecko.com/api/v3/simple/price?ids=Stellar&vs_currencies=usd"
       );
       setXlmusd(response.data.stellar.usd);
     } catch (err) {
       console.log(err);
     }
   };
+  useEffect(() => {
+    let temp = 0;
+    total.map((item) => {
+      temp += item.value;
+    });
+    setTotalGC(temp);
+    setTotalUSD(temp * (currentCPI / 300));
+    let tempxml = ((temp * (currentCPI / 300)) / xlmusd).toFixed(7);
+    setTotalXML(tempxml);
+    setSendEachActual((tempxml / 5).toFixed(7).toString());
+  }, [currentCPI, total, totalGC, totalXLM, xlmusd]);
+  console.log(totalGC, "s");
 
   const crease = (name, counter) => {
     arrayKill(total, name, "name");
@@ -77,7 +115,7 @@ const Pay = () => {
 
   const send = async () => {
     if (nonprofit.length < 5) {
-      alert("please select 5 nonprofit");
+      alert.error("Choose a nonprofit or Something repeats.");
     } else {
       const transaction = await mine();
       let mineSequence = transaction.transactionSequence;
@@ -138,19 +176,10 @@ const Pay = () => {
 
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
-    let totalGC = 0;
-    total.map((item) => {
-      totalGC += item.value;
-    });
-
-    let totalUSD = (totalGC * (295.62 / 300)).toFixed(2);
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
-    const totalXLM = ((totalGC * (295.62 / 300)) / xlmusd).toFixed(7);
     alert(totalUSD + "totalusd");
     alert(totalXLM + "totalXLM");
-    let sendEachActual = (totalXLM / 5).toFixed(7).toString();
-
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.TESTNET,
@@ -287,183 +316,201 @@ const Pay = () => {
   };
 
   return (
-    <Wrapper>
-      <Dashboard>
-        <TextColor>
-          Welcome to the GlobalChange downloadable webapp. Transactions are
-          between you, other users, and independent nonprofits on tbe Stellar
-          Lumens blockchain. There is no central server. You can use this webapp
-          to help send money to nonprofits and self-mint new GC bills based on
-          your donations, including checking for NFT art that gets randomly
-          attached to new bills. Anyone can verify if you minted the currency
-          correctly.
-        </TextColor>
-        <CardContainer>
-          <ImageGroup>
-            <DefaultImage src={Card1} />
-            <>digital cash: “NFTs” with face values</>
-          </ImageGroup>
-          <ImageGroup>
-            <DefaultImage src={Card2} />
-            <>Get crypto by giving to charity</>
-          </ImageGroup>
-        </CardContainer>
-      </Dashboard>
-      <Dashboard2>
-        <Title>
-          Enter your Stellar Lumens account no. (if you don’t have one, go get
-          one)
-        </Title>
-        <ConnectWrapper>
-          <ConnectInput onChange={(e) => setAccountKey(e.target.value)} />
-          <Button onClick={handleClick}>Connect Account</Button>
-        </ConnectWrapper>
-        <CardContainer>
-          <Col>
-            <span>Account Balances</span>
-            <TextContainer>
-              GC {accountKey ? <>5421</> : <>no account connected</>}
-            </TextContainer>
-            <TextContainer>
-              GC {accountKey ? <>33.3314</> : <>no account connected</>}
-            </TextContainer>
-          </Col>
-          <Col
-            style={{
-              background: "rgba(27, 94, 118, 0.21)",
-            }}
-          >
-            <span>Current Cost of 1 GC</span>
-            <TextContainer>
-              USD <div>0.97</div>
-            </TextContainer>
-            <TextContainer>
-              XLM <div>111.25</div>
-            </TextContainer>
-          </Col>
-        </CardContainer>
-      </Dashboard2>
-      <Dashboard3>
-        <Title>Send GC (pay someone) </Title> <ConnectInput />
-        <>Amount to send</>
-        <ConnectInput />
-        <>GC</>
-        <ConnectInput />{" "}
-        <>
-          Your Stellar Lumens account private key OR leave blank to connect
-          wallet (Freighter)
-        </>
-        <Button>Send</Button>
-      </Dashboard3>{" "}
-      <Dashboard2>
-        <Title>Mine and Mint New GC for yourself</Title>
-        <Text>
-          1. Select which GC you wish to mint. Bills are shown here in their
-          generic form. In addition, each has some probability of receiving
-          special edition art.
-        </Text>
-        <CardContainer style={{ alignItems: "flex-start" }}>
-          <Col>
-            {card.map((item, key) => (
-              <CardContent
-                name={item.name}
-                src={item.src}
-                total={total}
-                key={key}
-                crease={crease}
-                setTotal={setTotal}
-              />
-            ))}
-          </Col>
-
-          <Col2>
-            <Text>2. Select 5 nonprofits to receive XLM</Text>
+    <>
+      <Wrapper>
+        <Dashboard>
+          <TextColor>
+            Welcome to the GlobalChange downloadable webapp. Transactions are
+            between you, other users, and independent nonprofits on tbe Stellar
+            Lumens blockchain. There is no central server. You can use this
+            webapp to help send money to nonprofits and self-mint new GC bills
+            based on your donations, including checking for NFT art that gets
+            randomly attached to new bills. Anyone can verify if you minted the
+            currency correctly.
+          </TextColor>
+          <CardContainer>
+            <ImageGroup>
+              <DefaultImage src={Card1} />
+              <>digital cash: “NFTs” with face values</>
+            </ImageGroup>
+            <ImageGroup>
+              <DefaultImage src={Card2} />
+              <>Get crypto by giving to charity</>
+            </ImageGroup>
+          </CardContainer>
+        </Dashboard>
+        <Dashboard2>
+          <Title>
+            Enter your Stellar Lumens account no. (if you don’t have one, go get
+            one)
+          </Title>
+          <ConnectWrapper>
+            <ConnectInput onChange={(e) => setAccountKey(e.target.value)} />
+            <Button onClick={handleClick}>Connect Account</Button>
+          </ConnectWrapper>
+          <CardContainer>
             <Col>
-              <TextContainer
-                style={{ justifyContent: "space-between", width: "100%" }}
-              >
-                <Col>
-                  {[1, 2, 3, 4, 5].map((item, key) => (
-                    <SelectBox
-                      key={key}
-                      nonprofit={nonprofit}
-                      setNonprofit={setNonprofit}
-                    />
-                  ))}
-                </Col>
-                <TextColor2>
-                  Option: you can enter alternate nonprofit addresses directly
-                  into the nonprofit list fields. You might want to do this only
-                  if you are confident others will accept this nonprofit as a
-                  valid recipient for GlobalChange mining.{" "}
-                </TextColor2>
+              <span>Account Balances</span>
+              <TextContainer>
+                GC {accountKey ? <>5421</> : <>no account connected</>}
               </TextContainer>
-              <DefaultImage src={Newgc} />
+              <TextContainer>
+                GC {accountKey ? <>33.3314</> : <>no account connected</>}
+              </TextContainer>
             </Col>
-            <Text>3. Enter you connect wallet (Freighter)</Text>
-            <Button onClick={send}>Send</Button>
-          </Col2>
-        </CardContainer>
-      </Dashboard2>
-      <Dashboard2>
-        <Title>My SmartWallet</Title>
-        <TextContainer2>
-          {accountKey ? (
+            <Col
+              style={{
+                background: "rgba(27, 94, 118, 0.21)",
+              }}
+            >
+              <span>Current Cost of 1 GC</span>
+              <TextContainer>
+                USD <div>{(currentCPI / 300).toFixed(2)}</div>
+              </TextContainer>
+              <TextContainer>
+                XLM <div>{((currentCPI / 300) * xlmusd).toFixed(3)} </div>
+              </TextContainer>
+            </Col>
+          </CardContainer>
+        </Dashboard2>
+        <Dashboard3>
+          <Title>Send GC (pay someone) </Title>
+          <>Recipient account or GC nickname</>
+          <ConnectInput />
+          <>Amount to send</>
+          <ConnectInput />
+          <>
+            Your Stellar Lumens account private key OR leave blank to connect
+            wallet (Freighter)
+          </>
+          <ConnectInput />
+          <Button>Send</Button>
+        </Dashboard3>
+        <Dashboard2>
+          <Title>Mine and Mint New GC for yourself</Title>
+          <Text>
+            1. Select which GC you wish to mint. Bills are shown here in their
+            generic form. In addition, each has some probability of receiving
+            special edition art.
+          </Text>
+          <CardContainer style={{ alignItems: "flex-start" }}>
+            <Col style={{ gap: "20px" }}>
+              {card.map((item, key) => (
+                <CardContent
+                  name={item.name}
+                  src={item.src}
+                  value={item.value}
+                  total={total}
+                  key={key}
+                  crease={crease}
+                  setTotal={setTotal}
+                />
+              ))}
+            </Col>
+
+            <Col2>
+              <Text>2. Select 5 nonprofits to receive XLM</Text>
+              <Col>
+                <TextContainer
+                  style={{ justifyContent: "space-between", width: "100%" }}
+                >
+                  <Col>
+                    {[1, 2, 3, 4, 5].map((item, key) => (
+                      <SelectBox
+                        key={key}
+                        nonprofit={nonprofit}
+                        setNonprofit={setNonprofit}
+                      />
+                    ))}
+                  </Col>
+                  <TextColor2>
+                    Option: you can enter alternate nonprofit addresses directly
+                    into the nonprofit list fields. You might want to do this
+                    only if you are confident others will accept this nonprofit
+                    as a valid recipient for GlobalChange mining.{" "}
+                  </TextColor2>
+                </TextContainer>
+                <Analog
+                  totalGC={totalGC}
+                  currentCPI={currentCPI}
+                  totalUSD={totalUSD}
+                  totalXLM={totalXLM}
+                  sendEachActual={sendEachActual}
+                  xlmusd={xlmusd}
+                />
+              </Col>
+              <Text>Enter new nonprofit</Text>
+              <ConnectInput /> <Button onClick={send}>Save</Button>
+              <Text>
+                3. Enter your Stellar Lumens account private key OR leave blank
+                to connect wallet (Freighter)
+              </Text>
+              <ConnectInput /> <Button onClick={send}>Engage</Button>
+            </Col2>
+          </CardContainer>
+        </Dashboard2>
+        <Dashboard2>
+          <Title>My SmartWallet</Title>
+          <TextContainer2>
+            {accountKey ? (
+              <>
+                Total face value: 5421.55 GC{" "}
+                <span>Public Nickname: Alamgi43</span>
+              </>
+            ) : (
+              <>
+                No account linked{" "}
+                <span>
+                  Enter Stellar Lumens account no. at the top of this page{" "}
+                </span>
+              </>
+            )}
+          </TextContainer2>
+          {accountKey && (
             <>
-              Total face value: 5421.55 GC{" "}
-              <span>Public Nickname: Alamgi43</span>
-            </>
-          ) : (
-            <>
-              No account linked{" "}
-              <span>
-                Enter Stellar Lumens account no. at the top of this page{" "}
-              </span>
+              <Title>My GC</Title>
+              <MygcWrapper>
+                <Mygc title="Spendable" text="Face value balance: 850.55 GC" />
+                <Line />
+                <Mygc
+                  title="Vault(collection)"
+                  text="Face value balance: 4500 GC"
+                />
+                <Line />
+                <Mygc title="My Auctions" text="Face value balance: 71 GC" />
+              </MygcWrapper>
+              <Title>My Map</Title>
+              <Map />
+              <Title>My Feed</Title>
+              <FeedIndex />
             </>
           )}
-        </TextContainer2>
-        {accountKey && (
-          <>
-            <Title>My GC</Title>
-            <MygcWrapper>
-              <Mygc title="Spendable" text="Face value balance: 850.55 GC" />
-              <Line />
-              <Mygc
-                title="Vault(collection)"
-                text="Face value balance: 4500 GC"
-              />
-              <Line />
-              <Mygc title="My Auctions" text="Face value balance: 71 GC" />
-            </MygcWrapper>
-            <Title>My Map</Title>
-            <Map />
-            <Title>My Feed</Title>
-            <FeedIndex />
-          </>
-        )}
-      </Dashboard2>
-      <Dashboard4>
-        <Title>Check or claim printed bill</Title>
-        <TextContainer2>
-          <>Has someone given you a printed GlobalChange bill? </>
-          <span>
-            Confirm if it is currently valid and locked on the network; and
-            enter its password to sweep it to your account.
-          </span>
-        </TextContainer2>
-        <Text>Enter bill’s serial number to check its status</Text>
-        <ConnectWrapper>
-          <>SN</>
-          <ConnectInput onChange={(e) => setCheckBill(e.target.value)} />
-        </ConnectWrapper>
-        <Button onClick={handleClick}>Check Bill</Button>
-        <Title>Claim printed bill</Title>
-        <TextContainer2>
-          <>No account linked </>
-          <span>Enter Stellar Lumens account no. at the top of this page</span>
-        </TextContainer2>
-      </Dashboard4>
-    </Wrapper>
+        </Dashboard2>
+        <Dashboard4>
+          <Title>Check or claim printed bill</Title>
+          <TextContainer2>
+            <>Has someone given you a printed GlobalChange bill? </>
+            <span>
+              Confirm if it is currently valid and locked on the network; and
+              enter its password to sweep it to your account.
+            </span>
+          </TextContainer2>
+          <Text>Enter bill’s serial number to check its status</Text>
+          <ConnectWrapper>
+            <>SN</>
+            <ConnectInput onChange={(e) => setCheckBill(e.target.value)} />
+          </ConnectWrapper>
+          <Button onClick={handleClick}>Check Bill</Button>
+          <Title>Claim printed bill</Title>
+          <TextContainer2>
+            <>No account linked </>
+            <span>
+              Enter Stellar Lumens account no. at the top of this page
+            </span>
+          </TextContainer2>
+        </Dashboard4>
+      </Wrapper>
+    </>
   );
 };
 

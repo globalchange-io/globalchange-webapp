@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { arrayKill } from "../utills";
 import { Row } from "./element";
+import { useAlert } from "react-alert";
 
 const nonprofitDetail = [
   { name: "none", value: "none" },
@@ -70,15 +71,24 @@ const nonprofitDetail = [
 const SelectBox = (props) => {
   const { nonprofit, setNonprofit } = props;
   const [selectProfit, setSelectProfit] = useState();
+  const alert = useAlert();
 
   return (
     <Wrapper>
       <>nonprofit</>
       <WrapperContent
         onChange={(e) => {
-          setSelectProfit(e.target.value);
-          arrayKill(nonprofit, selectProfit, "address");
-          setNonprofit([...nonprofit, { address: e.target.value }]);
+          // eslint-disable-next-line no-unused-expressions
+          if (
+            nonprofit.filter((item) => item.address === e.target.value).length <
+            1
+          ) {
+            setSelectProfit(e.target.value);
+            arrayKill(nonprofit, selectProfit, "address");
+            setNonprofit([...nonprofit, { address: e.target.value }]);
+          } else {
+            alert.error("Already selected");
+          }
         }}
       >
         {nonprofitDetail.map((item, key) => (

@@ -26,10 +26,6 @@ const Test = () => {
   // Date on which transactions should be considered "Available Art"
   const availableArtDate = new Date("May 14, 2022").toDateString();
   // Function to filter transactions that meet the criteria for "Available Art"
-  const isAvailableArt = (transaction) => {
-    // Check if the transaction took place on May 13, 2022 or has a mintime between the start and end of the 1990s
-  };
-
   // Function to filter out transactions with duplicate memos
   const filterDuplicateMemos = (transactions) => {
     // Set to store unique memos
@@ -123,11 +119,9 @@ const Test = () => {
               (transaction.mintime >= startOf1990s &&
                 transaction.mintime <= endOf1990s);
             const isCorrectAccount = transaction.source_account === accounts[i];
-            console.log(accounts[i], "SA");
             // Check if the transaction is for the correct amount of Stroop
             // const isCorrectAmount = transaction.amount === scarcityLevel + 50;
             // Return true if both conditions are met, false otherwise
-
             return isCorrectDate && isCorrectAccount;
           }
         );
@@ -149,14 +143,32 @@ const Test = () => {
       // // Print the "Available Art" list
     })
     .then(function (result) {
-      const availableArtTransactions = result.records.filter(isAvailableArt);
-      // Remove delisted art from the "Available Art" list
-      const filteredTransactions = removeDelistedArt(availableArtTransactions);
-      const sortedTransactions = filterDuplicateMemos(
-        filteredTransactions
-      ).sort((a, b) => a.operation_count - b.operation_count);
-      console.log(availableArtTransactions, "availableArtTransactions");
-      printAvailableArt(sortedTransactions);
+      for (let i = 0; i < accounts.length; i++) {
+        const availableArtTransactions = result.records.filter(
+          (transaction) => {
+            const date = new Date(transaction.created_at).toDateString();
+            const isCorrectDate =
+              date === availableArtDate ||
+              (transaction.mintime >= startOf1990s &&
+                transaction.mintime <= endOf1990s);
+            const isCorrectAccount = transaction.source_account === accounts[i];
+            // Check if the transaction is for the correct amount of Stroop
+            // const isCorrectAmount = transaction.amount === scarcityLevel + 50;
+            // Return true if both conditions are met, false otherwise
+            return isCorrectDate && isCorrectAccount;
+          }
+        );
+
+        // Remove delisted art from the "Available Art" list
+        const filteredTransactions = removeDelistedArt(
+          availableArtTransactions
+        );
+        const sortedTransactions = filteredTransactions.sort(
+          (a, b) => a.operation_count - b.operation_count
+        );
+        console.log(availableArtTransactions, "availableArtTransactions");
+        printAvailableArt(sortedTransactions);
+      }
     })
     .catch(function (err) {
       console.log(err);

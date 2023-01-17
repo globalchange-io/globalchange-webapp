@@ -10,12 +10,14 @@ const CardContent = (props) => {
 
   return (
     <TextContainer>
-      {props.name}GC <DefaultImage src={props.src} />
+      <CardContainer>
+        <>{props.name}GC</> <DefaultImage src={props.src} />
+      </CardContainer>
       <CounterContainer>
         <FaPlus
           onClick={() => {
             setCounter(counter + 1);
-            crease(props.name, (counter + 1) * props.name);
+            crease(props.name, (counter + 1) * (props.value ?? props.name));
           }}
         />
         <input
@@ -42,9 +44,10 @@ const CardContent = (props) => {
   );
 };
 const TextContainer = styled(Row)`
-  width: 100%;
-  gap: 10px;
+  gap: 20px;
   justify-content: center;
+  max-width: 500px;
+  width: 100%;
   img {
     max-width: 150px;
   }
@@ -60,5 +63,10 @@ const CounterContainer = styled(Row)`
     text-align: center;
     font-size: 28px;
   }
+`;
+const CardContainer = styled(Row)`
+  gap: 20px;
+  flex: 1 1;
+  justify-content: flex-end;
 `;
 export default CardContent;
