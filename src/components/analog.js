@@ -28,7 +28,7 @@ const Analog = (props) => {
         </Table.Row>
         <Table.Row key="3">
           <Table.Cell>#CPI baskets</Table.Cell>
-          <Table.Cell>300</Table.Cell>
+          <Table.Cell>{(+totalUSD / currentCPI).toFixed(2)}</Table.Cell>
         </Table.Row>
         <Table.Row key="4">
           <Table.Cell>Current XLM</Table.Cell>

@@ -1,19 +1,6 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "../../components/element";
-import Card1 from "../../assets/image/card1.png";
-import Card2 from "../../assets/image/card2.png";
-import Card3 from "../../assets/image/card3.png";
-import Card4 from "../../assets/image/card4.png";
-import Card5 from "../../assets/image/card5.png";
-import Card6 from "../../assets/image/card6.png";
-import Card7 from "../../assets/image/card7.png";
-import Card8 from "../../assets/image/card8.png";
-import Card9 from "../../assets/image/card9.png";
-import Card10 from "../../assets/image/card10.png";
-import Card11 from "../../assets/image/card11.png";
-import Card12 from "../../assets/image/card12.png";
-import Card13 from "../../assets/image/card13.png";
-import Card14 from "../../assets/image/card14.png";
+import { Modal, Link } from "@nextui-org/react";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
 import Mygc from "../../components/mygc";
@@ -32,16 +19,96 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import { arrayKill } from "../../utills";
-import sha256 from "crypto-js/sha256";
+import { arrayKill, artOutCome, ImageCheck } from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import Test from "../../components/test";
 import layerGifOnImage from "../../components/pic";
 import { useAlert } from "react-alert";
 import Analog from "../../components/analog";
+import {
+  Card1,
+  Card2,
+  Card3,
+  Card4,
+  Card5,
+  Card6,
+  Card7,
+  Card8,
+  Card9,
+  Card10,
+  Card11,
+  Card12,
+  Card13,
+  Card14,
+  coinimage,
+} from "../../config/images";
 
 window.Buffer = Buffer;
+
+const nonprofitDetail = [
+  { name: "none", value: "none" },
+  {
+    name: "Bali Food Bank",
+    value: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A",
+  },
+  {
+    name: "Heifer International",
+    value: "GBSPK7XJDK3BB2HUO4DTANKWWVLTEKAK4NTTLVY56YYHIYQUFX5CJMAK",
+  },
+  {
+    name: "Crypto for the Homeless",
+    value: "GDWNMXOVH3GDYXFBD66U5OCHO33SUOSY37O6ZSZBCG33IZ7N6ZONZGFW",
+  },
+  {
+    name: "Women Who Code",
+    value: "GANLOWYTGSBJC6HK7PNWCYGTSPSXYQMJHKEK7B7FOTSU5HB2QWTJJBZW",
+  },
+  {
+    name: "Aid for Ukraine",
+    value: "GCTW6KJYUJRQVTKQDMWH4EBT33DMGO2ZNLUDQIPS4KSZ6UXQAT2DAFHU",
+  },
+  {
+    name: " University of San Francisco",
+    value: "GAPPHYCJJAY3XUYEVRUSVZYZVVTMQ2JNSRHQW2AVBAHZX3MD5QNMFABY",
+  },
+  {
+    name: "Freedom of the Press Foundation",
+    value: "GBLT2J3A2U3ELWIJNIAAJOF6JYOHNBDQK3QOVOYX35DXIIN2G6TJJZG7",
+  },
+  {
+    name: "Coin Center",
+    value: "GCO5W2ZUS2PIEZDOEY5JNP5P3QXAZRDHGGIPFTYQQ4ARSA3YH4GXPR2W",
+  },
+  {
+    name: "Global Emancipation Network",
+    value: "GCLKR3M4SA3Y3MQ7XB7HG6IBTSE7U6FSKSBOFRJRN542FSH7GTLTAKOP",
+  },
+  {
+    name: "For Living Independence",
+    value: "GBJEYQRA6DEPQ4LS6A4LQVREGSPLGHBAACBHXWLXQM2MVHAUBOJ7QCMQ",
+  },
+  {
+    name: "EmpowerED Pathways",
+    value: "GALUY22PHA4X5Q4GXOMXNPYKMMTSMOLOI42NHRFJXNKF6TQU726U35B6",
+  },
+  {
+    name: "Fight for the Future Fund",
+    value: "GCLTH3R5CUICCLJUFJM6Z62ZCQMCLRKPJT3O7QB5CJXJ2FNXIXVHZGB2",
+  },
+  {
+    name: "Solar Dos Abraxis",
+    value: "GB7V7BCGPGZGLYBQDHIU7LBV6AWEJGRRHJVAWELWTTJ77B2XVMZTHO3I",
+  },
+  {
+    name: " Tor Project",
+    value: "GAS4FM36L6FGDVRDARCKAPWWILS257ILNBGIKVAJOLN22QJMSBFTY3KD",
+  },
+  {
+    name: "Stellar.expert",
+    value: "GCTORL7ZPVDJ436DDHDNJI2FJQKIS46V7KZDBJJ5SFBT7WVIKYMGPEIV",
+  },
+];
 
 const Pay = () => {
   const alert = useAlert();
@@ -56,7 +123,22 @@ const Pay = () => {
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalXLM, setTotalXML] = useState(0);
   const [sendEachActual, setSendEachActual] = useState(0);
-
+  const [secretKey, setSecretKey] = useState(
+    "SALITYGIHL23YOY5ARSPSATHF7Q7WL3AEOGXICQQUH6LTGE6TU6XI6BS"
+  );
+  const [info, setInfo] = useState();
+  const [visible, setVisible] = useState(false);
+  const [allValues, setAllValues] = useState({
+    title: "miniin",
+    by: "marcage",
+    born: "2022.12.16",
+    forwhat: "nonprofit",
+  });
+  const handler = () => setVisible(true);
+  const closeHandler = () => {
+    setVisible(false);
+    console.log("closed");
+  };
   const card = [
     { name: 1, src: Card1 },
     { name: 5, src: Card2 },
@@ -76,7 +158,6 @@ const Pay = () => {
   ];
 
   let bills = [];
-  // Test();
   useEffect(() => {
     getStellarPrice();
   }, []);
@@ -120,57 +201,38 @@ const Pay = () => {
       const transaction = await mine();
       let mineSequence = transaction.transactionSequence;
       console.log(mineSequence, "mine result");
+      const tempdata = [];
       for (const key in total) {
         if (Object.hasOwnProperty.call(total, key)) {
           const element = total[key];
           for (let i = 0; i < element.value / element.name; i++) {
             let faceValueText = element.name + " GC ";
-            await mint(mineSequence, faceValueText);
+            const res = await mint(mineSequence, faceValueText);
+            const data = await artOutCome(res.transactionId);
+            tempdata.push(data);
           }
         }
       }
+      setInfo(tempdata);
+      Test(nonprofit);
+      handler();
     }
   };
   // layerGifOnImage(
   //   "https://docs.google.com/spreadsheets/d/1QS8MdrRxLpSd3LmnBCPkvEWqEag95M9KOdilO-hD2xw/edit#gid=588497558",
   //   Card1
   // );
-  const secretKey = "SALITYGIHL23YOY5ARSPSATHF7Q7WL3AEOGXICQQUH6LTGE6TU6XI6BS";
   const sourceKeypair = Keypair.fromSecret(secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
   const server = new Server("https://horizon-testnet.stellar.org");
 
   const handleClick = async () => {
-    server
-      .transactions()
-      .transaction(checkbill)
-      .call()
-      .then(async (res) => {
-        const ledgerhash = res.ledger_attr;
-        const memoname = res.memo.split(" ", 3);
-        server
-          .ledgers()
-          .ledger(ledgerhash)
-          .call()
-          .then(function (resp) {
-            const hash = sha256(res.ledger_attr + resp.hash).toString();
-            const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
-
-            navigate(Public_Special, {
-              state: {
-                numbersOnly: numbersOnly,
-                checkbill: checkbill,
-                memoname: memoname[0],
-              },
-            });
-          })
-          .catch(function (err) {
-            console.error(err);
-          });
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
+    const data = await artOutCome(checkbill);
+    navigate(Public_Special, {
+      state: {
+        data: data,
+      },
+    });
   };
 
   const mine = async () => {
@@ -295,12 +357,7 @@ const Pay = () => {
         ledger: transactionResult.ledger,
       });
 
-      console.log(transactionResult);
-
-      console.log("face value: " + faceValueText);
-
       bills.forEach((item) => console.log(item, "bills"));
-
       return {
         transactionId: transactionResult.id,
         transactionSequence: transactionResult.source_account_sequence,
@@ -311,7 +368,6 @@ const Pay = () => {
       console.log(e);
     }
   };
-
   return (
     <>
       <Wrapper>
@@ -341,10 +397,10 @@ const Pay = () => {
             Enter your Stellar Lumens account no. (if you don’t have one, go get
             one)
           </Title>
-          <ConnectWrapper>
+          <CheckBill>
             <ConnectInput onChange={(e) => setAccountKey(e.target.value)} />
             <Button onClick={handleClick}>Connect Account</Button>
-          </ConnectWrapper>
+          </CheckBill>
           <CardContainer>
             <Col>
               <span>Account Balances</span>
@@ -365,7 +421,7 @@ const Pay = () => {
                 USD <div>{(currentCPI / 300).toFixed(2)}</div>
               </TextContainer>
               <TextContainer>
-                XLM <div>{((currentCPI / 300) * xlmusd).toFixed(3)} </div>
+                XLM <div>{((1 * (currentCPI / 300)) / xlmusd).toFixed(7)} </div>
               </TextContainer>
             </Col>
           </CardContainer>
@@ -375,7 +431,10 @@ const Pay = () => {
           <>Recipient account or GC nickname</>
           <ConnectInput />
           <>Amount to send</>
-          <ConnectInput />
+          <ConnectWrapper>
+            <ConnectInput />
+            <>GC</>
+          </ConnectWrapper>
           <>
             Your Stellar Lumens account private key OR leave blank to connect
             wallet (Freighter)
@@ -417,6 +476,7 @@ const Pay = () => {
                         key={key}
                         nonprofit={nonprofit}
                         setNonprofit={setNonprofit}
+                        nonprofitDetail={nonprofitDetail}
                       />
                     ))}
                   </Col>
@@ -442,7 +502,11 @@ const Pay = () => {
                 3. Enter your Stellar Lumens account private key OR leave blank
                 to connect wallet (Freighter)
               </Text>
-              <ConnectInput /> <Button onClick={send}>Engage</Button>
+              <ConnectInput
+                value={secretKey}
+                onChange={(e) => setSecretKey(e.target.value)}
+              />{" "}
+              <Button onClick={send}>Engage</Button>
             </Col2>
           </CardContainer>
         </Dashboard2>
@@ -488,15 +552,15 @@ const Pay = () => {
           <TextContainer2>
             <>Has someone given you a printed GlobalChange bill? </>
             <span>
-              Confirm if it is currently valid and locked on the network; and
+              Comfirm if it is currently valid and locked on the network; and
               enter its password to sweep it to your account.
             </span>
           </TextContainer2>
           <Text>Enter bill’s serial number to check its status</Text>
-          <ConnectWrapper>
+          <CheckBill>
             <>SN</>
             <ConnectInput onChange={(e) => setCheckBill(e.target.value)} />
-          </ConnectWrapper>
+          </CheckBill>
           <Button onClick={handleClick}>Check Bill</Button>
           <Title>Claim printed bill</Title>
           <TextContainer2>
@@ -506,6 +570,65 @@ const Pay = () => {
             </span>
           </TextContainer2>
         </Dashboard4>
+        <Modal open={visible} onClose={closeHandler} width="800px">
+          <Modal.Header
+            css={{ position: "absolute", zIndex: "$1", top: 5, right: 8 }}
+          >
+            <Text color="#363449">
+              Photo by{" "}
+              <Link
+                color
+                rel="noopener noreferrer"
+                target="_blank"
+                href="https://unsplash.com/@anniespratt"
+              >
+                Annie Spratt
+              </Link>{" "}
+              on{" "}
+              <Link
+                rel="noopener noreferrer"
+                target="_blank"
+                href="https://unsplash.com/s/visual/ef7937f3-0d44-43eb-b992-28050748f999?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+              >
+                Unsplash
+              </Link>
+            </Text>
+          </Modal.Header>
+          <Modal.Body>
+            <Col>
+              {info &&
+                info.map((item, key) => (
+                  <ImageContainer key={key} memoname={item.memoname}>
+                    <ImageWrapper>
+                      <Row>{item.checkbill}</Row>
+                      <ImageGroup2>
+                        <DefaultImage src={coinimage} />
+                        <DetailWrapper>
+                          <TokenEditor>
+                            <Text>Title</Text>
+                            <Text>{allValues.title}</Text>
+                          </TokenEditor>
+                          <TokenEditor>
+                            <Text>By</Text>
+                            <Text>{allValues.by}</Text>
+                          </TokenEditor>
+                          <TokenEditor>
+                            <Text>Born</Text>
+                            <Text>{allValues.born}</Text>
+                          </TokenEditor>
+                          <TokenEditor>
+                            <Text>For</Text>
+                            <Text>{allValues.forwhat}</Text>
+                          </TokenEditor>
+                        </DetailWrapper>
+                      </ImageGroup2>
+                      <>{item.numbersOnly}</>
+                    </ImageWrapper>
+                  </ImageContainer>
+                ))}
+            </Col>
+          </Modal.Body>
+        </Modal>
       </Wrapper>
     </>
   );
@@ -515,6 +638,7 @@ const Wrapper = styled(Column)`
   width: 100%;
   gap: 30px;
 `;
+
 const Dashboard = styled(Column)`
   gap: 20px;
   padding: 20px 50px;
@@ -526,6 +650,7 @@ const Dashboard = styled(Column)`
     border: 0;
   }
 `;
+
 const Dashboard2 = styled(Column)`
   width: 100%;
   gap: 20px;
@@ -535,16 +660,20 @@ const Dashboard2 = styled(Column)`
   border-bottom: 1px solid black;
   padding-bottom: 30px;
 `;
+
 const Dashboard3 = styled(Dashboard2)`
   align-items: flex-start;
 `;
+
 const Dashboard4 = styled(Dashboard2)`
   border: 0;
   padding: 0px;
 `;
+
 const TextColor = styled.div`
   color: #1b5e76;
 `;
+
 const TextColor2 = styled.div`
   color: #ff4242;
   max-width: 350px;
@@ -562,6 +691,7 @@ const Title = styled.div`
   font-weight: bold;
   font-size: 24px;
 `;
+
 const CardContainer = styled(Row)`
   justify-content: space-around;
   width: 100%;
@@ -570,6 +700,7 @@ const CardContainer = styled(Row)`
     gap: 20px;
   }
 `;
+
 const ImageGroup = styled(Column)`
   font-size: 24px;
   font-weight: bold;
@@ -578,23 +709,31 @@ const ImageGroup = styled(Column)`
   text-align: center;
   gap: 10px;
 `;
+
 const ConnectWrapper = styled(Row)`
+  gap: 20px;
+`;
+
+const CheckBill = styled(Row)`
   gap: 20px;
   width: 100%;
 `;
+
 const ConnectInput = styled.input`
   max-width: 1000px;
   width: 100%;
   padding: 10px;
   background-color: #dcdfdf;
 `;
+
 const Col = styled(Column)`
   gap: 10px;
   width: 100%;
   padding: 10px;
 `;
+
 const Col2 = styled(Column)`
-  gap: 10px;
+  gap: 20px;
   width: 100%;
   padding: 10px;
   font-size: 12px;
@@ -606,17 +745,55 @@ const MygcWrapper = styled(Row)`
   width: 100%;
   margin: auto;
 `;
+
 const Line = styled.div`
   width: 1px;
   height: 100%;
   background-color: black;
 `;
+
 const TextContainer = styled(Row)`
   gap: 10px;
 `;
+
 const TextContainer2 = styled(Col)`
   gap: 10px;
   height: 100px;
 `;
-
+const ImageContainer = styled(Row)`
+  background-image: ${(props) => `url(${ImageCheck(props.memoname)})`};
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 400px;
+  margin: 0px 50px;
+  width: 100%;
+  overflow-y: auto;
+`;
+const ImageWrapper = styled(Column)`
+  font-size: 12px;
+  color: #ffffff;
+  height: 390px;
+  justify-content: space-around;
+  width: 100%;
+`;
+const DetailWrapper = styled(Column)`
+  gap: 5px;
+  align-items: flex-start;
+  max-width: 100px;
+  width: 100%;
+`;
+const TokenEditor = styled(Row)`
+  gap: 10px;
+  div {
+    font-size: 14px;
+  }
+`;
+const ImageGroup2 = styled(Row)`
+  gap: 80px;
+  img {
+    width: 100px;
+    padding-left: 180px;
+  }
+`;
 export default Pay;

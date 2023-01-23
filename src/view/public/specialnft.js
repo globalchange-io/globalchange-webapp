@@ -1,62 +1,31 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "../../components/element";
-import onegc from "../../assets/image/1GC.gif";
-import fivegc from "../../assets/image/5GC.gif";
-import tengc from "../../assets/image/10GC.gif";
-import twengc from "../../assets/image/20GC.gif";
-import fivtygc from "../../assets/image/50GC.gif";
-import hundredgc from "../../assets/image/100GC.gif";
-import thougc from "../../assets/image/1000GC.gif";
-import hundredthougc from "../../assets/image/100000GC.gif";
-import miliongc from "../../assets/image/1000000GC.gif";
-import coinimage from "../../assets/image/default.jpg";
+import { coinimage } from "../../config/images";
 import Button from "../../components/element/button";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Public_Pay } from "../../config";
+import { ImageCheck } from "../../utills";
 
 const Special = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { numbersOnly, checkbill, memoname } = location.state;
+  const { numbersOnly, checkbill, memoname } = location.state.data;
   const [allValues, setAllValues] = useState({
     title: "miniin",
     by: "marcage",
     born: "2022.12.16",
     forwhat: "nonprofit",
   });
-  const ImageCheck = () => {
-    switch (+memoname) {
-      case 1:
-        return onegc;
-      case 5:
-        return fivegc;
-      case 10:
-        return tengc;
-      case 20:
-        return twengc;
-      case 50:
-        return fivtygc;
-      case 100:
-        return hundredgc;
-      case 1000:
-        return thougc;
-      case 100000:
-        return hundredthougc;
-      case 1000000:
-        return miliongc;
-      default:
-        break;
-    }
-  };
+
   const changeHandler = (e) => {
     setAllValues({ ...allValues, [e.target.name]: e.target.value });
   };
 
   const ImageContainer = styled(Row)`
-    background-image: url(${ImageCheck});
+    background-image: url(${ImageCheck(memoname)});
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -186,7 +155,7 @@ const Back = styled(Row)`
   gap: 10px;
 `;
 const TokenEditor = styled(Row)`
-  gap: 10px;
+  gap: 20px;
 `;
 const ImageGroup = styled(Row)`
   gap: 80px;

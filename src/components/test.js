@@ -1,18 +1,12 @@
 import StellarSdk from "stellar-sdk";
 
-const Test = () => {
+const Test = (accounts) => {
+  console.log(accounts, accounts.length, "add");
   // Replace with your own horizon server URL
   // Replace with the recent ledger number that the user entered
   const recentLedgerNumber = "40861697";
 
   // Replace with the five account numbers that the user entered
-  const accounts = [
-    "GB6O5KIWNM5VMK6NYYV573PTDT7ZJBHXWLBBJXTY4LZDTC47Q2R4RX6S",
-    "GC4ML73EFGGHBWLITBMMNWSZK5PQK6TEHT2RUZZ7FTA3QUO4RAW7BWAD",
-    "GDWNMXOVH3GDYXFBD66U5OCHO33SUOSY37O6ZSZBCG33IZ7N6ZONZGFW",
-    "GA6KFS3IIG462BHDZCPKW3F3OHJ6Z2GY5JCLU6OPOSXSQYBKL5DTGSID",
-    "GCTW6KJYUJRQVTKQDMWH4EBT33DMGO2ZNLUDQIPS4KSZ6UXQAT2DAFHU",
-  ];
 
   // Replace with the scarcity level that the user entered
   const scarcityLevel = 50;
@@ -24,7 +18,7 @@ const Test = () => {
   const endOf1990s = 946684799;
 
   // Date on which transactions should be considered "Available Art"
-  const availableArtDate = new Date("May 14, 2022").toDateString();
+  const availableArtDate = new Date().toDateString();
   // Function to filter transactions that meet the criteria for "Available Art"
   // Function to filter out transactions with duplicate memos
   const filterDuplicateMemos = (transactions) => {

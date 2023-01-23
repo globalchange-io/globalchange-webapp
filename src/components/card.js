@@ -23,19 +23,24 @@ const CardContent = (props) => {
         <input
           value={counter}
           type="number"
+          min="0"
           onChange={(e) => {
-            setCounter(+e.target.value);
-            arrayKill(total, props.name, "name");
-            setTotal([
-              ...total,
-              { name: props.name, value: e.target.value * props.name },
-            ]);
+            if (+e.target.value >= 0) {
+              setCounter(+e.target.value);
+              arrayKill(total, props.name, "name");
+              setTotal([
+                ...total,
+                { name: props.name, value: e.target.value * props.name },
+              ]);
+            }
           }}
         />
         <FaMinus
           onClick={() => {
-            setCounter(counter - 1);
-            crease(props.name, (counter - 1) * props.name);
+            if (counter > 0) {
+              setCounter(counter - 1);
+              crease(props.name, (counter - 1) * props.name);
+            }
           }}
         />
       </CounterContainer>
