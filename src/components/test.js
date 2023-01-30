@@ -3,6 +3,9 @@ import { checkURL, layerGifOnImage } from "../utills";
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
 const Test = async (artOutComeLength) => {
+  console.log(
+    "in here I use mainnet account for test... GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK  --- GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA --- GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP --- GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI --- GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI"
+  );
   // Replace with your own horizon server URL
   // Replace with the recent ledger number that the user entered
   const recentLedgerNumber = "40861697";
@@ -45,6 +48,10 @@ const Test = async (artOutComeLength) => {
 
   // Function to print the transactions in the "Available Art" list
   const printAvailableArt = async (transactions) => {
+    console.log(
+      transactions,
+      " transactions in 5 accounts that fit all criteria"
+    );
     // Iterate through the transactions and print each one
     artOutComeLength.map((item) =>
       transactions.map(
@@ -52,8 +59,6 @@ const Test = async (artOutComeLength) => {
           key === item % transactions.length && layerGifOnImage(items.memo)
       )
     );
-
-    console.log(artOutComeLength);
     // return transactions[turnnumber].memo;
   };
 

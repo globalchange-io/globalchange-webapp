@@ -228,9 +228,11 @@ const Pay = () => {
         }
       }
       setInfo(tempdata);
+      console.log(tempdata, "ArtSeed");
       let artOutComeLength = [];
       tempdata.map((item) => artOutComeLength.push(item.numbersOnly.length));
       // Test(artOutComeLength);
+      console.log(artOutComeLength, "ArtSeedLength");
       Test(artOutComeLength);
       handler();
     }
