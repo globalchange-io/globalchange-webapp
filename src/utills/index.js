@@ -1,4 +1,5 @@
 import sha256 from "crypto-js/sha256";
+import { read, utils } from "xlsx";
 import { Server } from "stellar-sdk";
 import {
   onegc,
@@ -20,6 +21,13 @@ export const arrayKill = (array, target, name) => {
   if (itemToRemoveIndex !== -1) {
     return array.splice(itemToRemoveIndex, 1);
   }
+};
+
+export const checkURL = (URL) => {
+  const regex = new RegExp(
+    "(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?"
+  );
+  return regex.test(URL);
 };
 
 export const artOutCome = async (checkbill) => {
@@ -78,4 +86,19 @@ export const ImageCheck = (memoname) => {
     default:
       break;
   }
+};
+/* load 'fs' for readFile and writeFile support */
+
+export const layerGifOnImage = async (url) => {
+  const f = await (await fetch(url)).arrayBuffer();
+  const workbook = read(f);
+
+  const data = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+  const artlist = data.filter(
+    (item) => item["GlobalChange.io"] === "Link to Art"
+  )[0];
+  console.log(
+    Object.keys(artlist)[3] + "---------" + artlist[Object.keys(artlist)[3]]
+  );
+  console.log(artlist, "artlist", url);
 };

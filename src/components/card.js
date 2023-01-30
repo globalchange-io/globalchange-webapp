@@ -44,7 +44,7 @@ const CardContent = (props) => {
           }}
         />
       </CounterContainer>
-      = {counter}GC
+      = {counter * (props.value ?? props.name)}GC
     </TextContainer>
   );
 };

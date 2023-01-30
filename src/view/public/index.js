@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { Public_Profix, Public_Pay, Public_Special } from "../../config";
+import { Public_Pay, Public_Special } from "../../config";
 import Pay from "./pay";
 import Error from "./404error";
 import Special from "./specialnft";

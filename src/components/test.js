@@ -1,26 +1,26 @@
 import StellarSdk from "stellar-sdk";
+import { checkURL, layerGifOnImage } from "../utills";
+const server = new StellarSdk.Server("https://horizon.stellar.org");
 
-const Test = (accounts) => {
-  console.log(accounts, accounts.length, "add");
+const Test = async (artOutComeLength) => {
   // Replace with your own horizon server URL
   // Replace with the recent ledger number that the user entered
   const recentLedgerNumber = "40861697";
+  let memoTransactions = [];
+  const accounts = [
+    { address: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK" },
+    { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
+    { address: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP" },
+    { address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI" },
+    { address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI" },
+  ];
 
   // Replace with the five account numbers that the user entered
 
   // Replace with the scarcity level that the user entered
-  const scarcityLevel = 50;
+  const scarcityLevel = 0.0000051;
+  const scarcityLevel2 = 0.0000063;
 
-  // Replace with the start time of the 1990s in Unix time
-  const startOf1990s = 631152000;
-
-  // Replace with the end time of the 1990s in Unix time
-  const endOf1990s = 946684799;
-
-  // Date on which transactions should be considered "Available Art"
-  const availableArtDate = new Date().toDateString();
-  // Function to filter transactions that meet the criteria for "Available Art"
-  // Function to filter out transactions with duplicate memos
   const filterDuplicateMemos = (transactions) => {
     // Set to store unique memos
     const uniqueMemos = new Set();
@@ -43,175 +43,67 @@ const Test = (accounts) => {
     });
   };
 
-  // Function to remove delisted art from the "Available Art" list
-  const removeDelistedArt = (transactions) => {
-    // Map to store the delisted memos
-    const delistedMemos = new Map();
-    // Iterate through the transactions and store the delisted memos
-    transactions.forEach((transaction) => {
-      // Check if the transaction is a delisting transaction
-      if (transaction.amount === 63) {
-        delistedMemos.set(transaction.memo, true);
-      }
-    });
-
-    // Filter out transactions that have been delisted
-    return transactions.filter(
-      (transaction) => !delistedMemos.has(transaction.memo)
-    );
-  };
-
   // Function to print the transactions in the "Available Art" list
-  const printAvailableArt = (transactions) => {
+  const printAvailableArt = async (transactions) => {
     // Iterate through the transactions and print each one
-    transactions.forEach((transaction, index) => {
-      console.log(`${index + 1}. Memo: ${transaction.memo}`);
-    });
+    artOutComeLength.map((item) =>
+      transactions.map(
+        (items, key) =>
+          key === item % transactions.length && layerGifOnImage(items.memo)
+      )
+    );
+
+    console.log(artOutComeLength);
+    // return transactions[turnnumber].memo;
   };
 
-  // // Connect to the Horizon server
-  // const server = new StellarSdk.Server(horizon);
-
-  // // Query the Horizon server for the transactions in the specified accounts and ledger range
-  // server
-  //   .transactions()
-  //   .forAccounts(accounts)
-  //   .ledger(recentLedgerNumber)
-  //   .order("asc") // order the transactions in ascending order
-  //   .call()
-  //   .then((results) => {
-  //     // Filter the transactions to include only those that meet the criteria for "Available Art"
-  //     const availableArtTransactions = results.records.filter(isAvailableArt);
-
-  //     // Remove delisted art from the "Available Art" list
-  //     const filteredTransactions = removeDelistedArt(availableArtTransactions);
-
-  //     // Sort the remaining transactions in operation order
-  //     const sortedTransactions = filteredTransactions.sort(
-  //       (a, b) => a.operation_count - b.operation_count
-  //     );
-
-  //     // Print the "Available Art" list
-  //     printAvailableArt(sortedTransactions);
-  //   });
-
-  // Connect to the Horizon server
-  const server = new StellarSdk.Server("https://horizon.stellar.org");
-
-  server
-    .transactions()
-    .forLedger(recentLedgerNumber)
-    .limit("200")
-    .call()
-    .then(function (results) {
-      for (let i = 0; i < accounts.length; i++) {
-        const availableArtTransactions = results.records.filter(
-          (transaction) => {
-            const date = new Date(transaction.created_at).toDateString();
-            const isCorrectDate =
-              date === availableArtDate ||
-              (transaction.mintime >= startOf1990s &&
-                transaction.mintime <= endOf1990s);
-            const isCorrectAccount = transaction.source_account === accounts[i];
-            // Check if the transaction is for the correct amount of Stroop
-            // const isCorrectAmount = transaction.amount === scarcityLevel + 50;
-            // Return true if both conditions are met, false otherwise
-            return isCorrectDate && isCorrectAccount;
-          }
-        );
-
-        // Remove delisted art from the "Available Art" list
-        const filteredTransactions = removeDelistedArt(
-          availableArtTransactions
-        );
-        const sortedTransactions = filteredTransactions.sort(
-          (a, b) => a.operation_count - b.operation_count
-        );
-        console.log(availableArtTransactions, "availableArtTransactions");
-        printAvailableArt(sortedTransactions);
-      }
-
-      return results.next();
-      // // Sort the remaining transactions in operation order
-
-      // // Print the "Available Art" list
-    })
-    .then(function (result) {
-      for (let i = 0; i < accounts.length; i++) {
-        const availableArtTransactions = result.records.filter(
-          (transaction) => {
-            const date = new Date(transaction.created_at).toDateString();
-            const isCorrectDate =
-              date === availableArtDate ||
-              (transaction.mintime >= startOf1990s &&
-                transaction.mintime <= endOf1990s);
-            const isCorrectAccount = transaction.source_account === accounts[i];
-            // Check if the transaction is for the correct amount of Stroop
-            // const isCorrectAmount = transaction.amount === scarcityLevel + 50;
-            // Return true if both conditions are met, false otherwise
-            return isCorrectDate && isCorrectAccount;
-          }
-        );
-
-        // Remove delisted art from the "Available Art" list
-        const filteredTransactions = removeDelistedArt(
-          availableArtTransactions
-        );
-        const sortedTransactions = filteredTransactions.sort(
-          (a, b) => a.operation_count - b.operation_count
-        );
-        console.log(availableArtTransactions, "availableArtTransactions");
-        printAvailableArt(sortedTransactions);
-      }
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-
-  async function checkBillOwnership(serialNumber, recipientAccountId) {
-    // Load the transaction with the specified serial number
-    const transaction = await server
-      .transactions()
-      .transaction(serialNumber)
-      .call();
-
-    // Get the account ID of the sender of the transaction
-    const senderAccountId = transaction.source_account;
-
-    // Initialize the current account ID to the sender's account ID
-    let currentAccountId = senderAccountId;
-
-    // Initialize a flag to track whether the recipient is the owner
-    let isOwner = false;
-
-    // Initialize a list to store the transaction history
-    const transactionHistory = [currentAccountId];
-
-    // Keep searching for the recipient's account ID in the memo field of transactions
-    // until the recipient's account ID is found or there are no more transactions to search
-    while (!isOwner && currentAccountId !== recipientAccountId) {
-      // Load the transactions for the current account
-      const transactions = await server
+  try {
+    for (let j = 0; j < accounts.length; j++) {
+      let tran = await server
         .transactions()
-        .forAccount(currentAccountId)
+        .forAccount(accounts[j].address)
+        .limit("200")
         .call();
-
-      // Iterate through the transactions to find the one with the serial number in the memo
-      for (const transaction of transactions.records) {
-        if (transaction.memo && transaction.memo.value === serialNumber) {
-          // Set the current account ID to the recipient of the transaction
-          currentAccountId = transaction.to;
-          transactionHistory.push(currentAccountId);
-          break;
+      if (!tran.records.length) {
+        return;
+      }
+      // // Do something with the transactions
+      for (let i = 0; i < tran.records.length; i++) {
+        if (checkURL(tran.records[i].memo)) {
+          if (
+            tran.records[i].memo &&
+            +tran.records[i].ledger_attr >= +recentLedgerNumber
+          ) {
+            await server
+              .effects()
+              .forTransaction(tran.records[i].hash)
+              .limit("1")
+              .call()
+              .then(function (resp) {
+                if (
+                  scarcityLevel2 >= resp.records[0].amount &&
+                  resp.records[0].amount >= scarcityLevel
+                ) {
+                  memoTransactions.push(tran.records[i]);
+                }
+              })
+              .catch(function (err) {
+                console.error(err);
+              });
+          }
         }
       }
-      // Check if the current account ID is the recipient's account ID
-      isOwner = currentAccountId === recipientAccountId;
     }
+    // const filteredComplete = filterDuplicateMemos(memoTransactions);
 
-    // Output the transaction history
-    // Return the result
-    return isOwner;
+    const sortedTransactions = memoTransactions.sort(
+      (a, b) => a.operation_count - b.operation_count
+    );
+    printAvailableArt(sortedTransactions);
+    // Update the last transaction ID
+    // Recursive call to get all the transactions.
+  } catch (error) {
+    console.error(error);
   }
 };
 
