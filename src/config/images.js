@@ -22,7 +22,7 @@ import Card11 from "../assets/image/card11.png";
 import Card12 from "../assets/image/card12.png";
 import Card13 from "../assets/image/card13.png";
 import Card14 from "../assets/image/card14.png";
-
+import Question from "../assets/image/question.png";
 export {
   onegc,
   fivegc,
@@ -48,4 +48,5 @@ export {
   Card12,
   Card13,
   Card14,
+  Question,
 };

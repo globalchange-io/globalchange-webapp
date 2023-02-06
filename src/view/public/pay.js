@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "../../components/element";
-import { Modal, Link } from "@nextui-org/react";
+import { Modal } from "@nextui-org/react";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
 import Mygc from "../../components/mygc";
@@ -19,7 +19,7 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import { arrayKill, artOutCome, ImageCheck } from "../../utills";
+import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import Test from "../../components/test";
@@ -41,7 +41,9 @@ import {
   Card13,
   Card14,
   coinimage,
+  Question,
 } from "../../config/images";
+import { Loading } from "@nextui-org/react";
 
 window.Buffer = Buffer;
 
@@ -121,12 +123,13 @@ const Pay = () => {
   ]);
   const [info, setInfo] = useState();
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [inputInfo, setInputInfo] = useState({
     checkbill: "",
     accountKey: "",
     oldnonprofit: "",
     newnonprofit: "",
-    secretKey: "SALITYGIHL23YOY5ARSPSATHF7Q7WL3AEOGXICQQUH6LTGE6TU6XI6BS",
+    secretKey: "SC6ZB2VJTD2Y4GNW3R4WQEHGNF7ZBODHEYRVGXIFKJJU75WK7ADI64TU",
     newnonprofitname: "",
   });
   const [allValues, setAllValues] = useState({
@@ -135,6 +138,7 @@ const Pay = () => {
     born: "2022.12.16",
     forwhat: "nonprofit",
   });
+  const [image, setImage] = useState([]);
   const sourceKeypair = Keypair.fromSecret(inputInfo.secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
   const server = new Server("https://horizon-testnet.stellar.org");
@@ -172,7 +176,6 @@ const Pay = () => {
     getStellarPrice();
     let temp = 0;
     total.map((item) => (temp += item.value));
-
     setTotalGC(temp);
     setTotalUSD(temp * (currentCPI / 300));
     let tempxml = ((temp * (currentCPI / 300)) / xlmusd).toFixed(7);
@@ -212,6 +215,7 @@ const Pay = () => {
     if (nonprofit.length < 5) {
       alert.error("Choose a nonprofit or Something repeats.");
     } else {
+      setLoading(true);
       const transaction = await mine();
       let mineSequence = transaction.transactionSequence;
       console.log(mineSequence, "mine result");
@@ -230,14 +234,21 @@ const Pay = () => {
       setInfo(tempdata);
       console.log(tempdata, "ArtSeed");
       let artOutComeLength = [];
-      tempdata.map((item) => artOutComeLength.push(item.numbersOnly.length));
+      let artOutComeLevel = [];
+      tempdata.map((item) => {
+        artOutComeLength.push(item.numbersOnly.length);
+        artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
+      });
       // Test(artOutComeLength);
       console.log(artOutComeLength, "ArtSeedLength");
-      Test(artOutComeLength);
       handler();
+      Test(artOutComeLength, artOutComeLevel).then((res) => {
+        console.log(res);
+        setImage(res);
+        setLoading(false);
+      });
     }
   };
-
   const handleClick = async () => {
     const data = await artOutCome(inputInfo.checkbill);
     navigate(Public_Special, {
@@ -612,36 +623,19 @@ const Pay = () => {
         <Modal open={visible} onClose={closeHandler} width="800px">
           <Modal.Header
             css={{ position: "absolute", zIndex: "$1", top: 5, right: 8 }}
-          >
-            <Text color="#363449">
-              Photo by{" "}
-              <Link
-                color
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://unsplash.com/@anniespratt"
-              >
-                Annie Spratt
-              </Link>{" "}
-              on{" "}
-              <Link
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://unsplash.com/s/visual/ef7937f3-0d44-43eb-b992-28050748f999?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-              >
-                Unsplash
-              </Link>
-            </Text>
-          </Modal.Header>
+          ></Modal.Header>
           <Modal.Body>
             <Col>
-              {info &&
+              {loading ? (
+                <Loading />
+              ) : (
+                info &&
                 info.map((item, key) => (
                   <ImageContainer key={key} memoname={item.memoname}>
                     <ImageWrapper>
                       <Row>{item.checkbill}</Row>
                       <ImageGroup2>
-                        <DefaultImage src={coinimage} />
+                        <DefaultImage src={image[key] ?? Question} />
                         <DetailWrapper>
                           <TokenEditor>
                             <Text>Title</Text>
@@ -664,7 +658,8 @@ const Pay = () => {
                       <>{item.numbersOnly}</>
                     </ImageWrapper>
                   </ImageContainer>
-                ))}
+                ))
+              )}
             </Col>
           </Modal.Body>
         </Modal>
