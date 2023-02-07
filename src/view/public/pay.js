@@ -239,11 +239,14 @@ const Pay = () => {
         artOutComeLength.push(item.numbersOnly.length);
         artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
       });
-      // Test(artOutComeLength);
       console.log(artOutComeLength, "ArtSeedLength");
+      console.log(artOutComeLevel, "artOutComeLevel");
       handler();
       Test(artOutComeLength, artOutComeLevel).then((res) => {
-        console.log(res);
+        console.log(
+          res,
+          "image url array... if app didn't find url, in modal it output question mark image with some info. "
+        );
         setImage(res);
         setLoading(false);
       });

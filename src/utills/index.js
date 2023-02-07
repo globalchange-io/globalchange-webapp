@@ -100,7 +100,7 @@ export const layerGifOnImage = async (url) => {
       item["GlobalChange.io"] === "Link to Art" ||
       item["GlobalChange.io"] === "Link to Art or paste image here"
   )[0];
-  console.log(artlist, url);
+  console.log(artlist, "url data", url, "url by level");
   // artlist.map((item) => {
   console.log(artlist[Object.keys(artlist)["Instructions for Creators"]]);
   return artlist[Object.keys(artlist)["Instructions for Creators"]];

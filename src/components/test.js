@@ -104,6 +104,10 @@ const Test = async (artOutComeLength, artOutComeLevel) => {
       const sortedTransactions = memoTransactions.sort(
         (a, b) => a.operation_count - b.operation_count
       );
+      console.log(
+        sortedTransactions,
+        "transaction that has url and pass some checking"
+      );
       await Promise.all(
         sortedTransactions.map(async (items, key) => {
           if (key === artOutComeLength[k] % sortedTransactions.length) {
@@ -115,6 +119,7 @@ const Test = async (artOutComeLength, artOutComeLevel) => {
       );
       // eslint-disable-next-line array-callback-return
     }
+
     return arr;
   } catch (error) {
     console.error(error);
