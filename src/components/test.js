@@ -1,8 +1,8 @@
 import StellarSdk from "stellar-sdk";
-import { checkURL, layerGifOnImage } from "../utills";
+import { checkURL, digits_count, layerGifOnImage } from "../utills";
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
-const Test = async (artOutComeLength, artOutComeLevel) => {
+const Test = async (artOutComeNumber, artOutComeLevel) => {
   console.log(
     "in here I use mainnet account for test... GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK  --- GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA --- GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP --- GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI --- GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI"
   );
@@ -101,16 +101,24 @@ const Test = async (artOutComeLength, artOutComeLevel) => {
         }
       }
       // const filteredComplete = filterDuplicateMemos(memoTransactions);
+
       const sortedTransactions = memoTransactions.sort(
-        (a, b) => a.operation_count - b.operation_count
+        (a, b) => a.paging_token - b.paging_token
       );
+
+      const templength = digits_count(memoTransactions.length);
+      const artcycle = artOutComeNumber[k].slice(
+        artOutComeNumber[k].length - +templength
+      );
+
       console.log(
         sortedTransactions,
-        "transaction that has url and pass some checking"
+        "transaction that has url and pass some checking",
+        artcycle
       );
       await Promise.all(
         sortedTransactions.map(async (items, key) => {
-          if (key === artOutComeLength[k] % sortedTransactions.length) {
+          if (key + 1 === +artcycle % sortedTransactions.length) {
             await layerGifOnImage(items.memo).then((res) => {
               arr.push(res);
             });

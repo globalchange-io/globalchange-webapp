@@ -114,10 +114,17 @@ export const layerGifOnImage = async (url) => {
 };
 
 export const ScarcityLevel = (denomination, artOutcome) => {
+  const denomination2 = denomination.replace(/[a-z]/gi, "");
+
   const thresholds = {
     1: [
       0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001,
       0.000000001, 0.0000000001, 0.00000000001, 0.000000000000001,
+    ],
+    2: [
+      0.1938, 0.020298, 0.00203898, 0.0002039898, 0.0000203999, 0.00000204,
+      0.000000204, 0.0000000204, 0.00000000204, 0.0000000002, 0.00000000002,
+      0.0000000000000002,
     ],
     5: [
       0.4299855, 0.05146044761, 0.00523951049, 0.00052489501, 0.00005249895,
@@ -129,18 +136,32 @@ export const ScarcityLevel = (denomination, artOutcome) => {
       0.00001099995, 0.0000011, 0.00000011, 0.000000011, 0.0000000011,
       0.00000000011, 0.0000000000000012,
     ],
+    20: [
+      1.05410801449, 0.21851167488, 0.0237733622, 0.00239772137, 0.0002399772,
+      0.00002399977, 0.0000024, 0.00000024, 0.000000024, 0.0000000024,
+      0.00000000024, 0.0000000000000027,
+    ],
   };
-  const billThresholds = thresholds[denomination];
+  const billThresholds = thresholds[+denomination2];
   let scarcityLevel = 0;
-
-  for (let i = 0; i < billThresholds.length; i++) {
-    if (+artOutcome > billThresholds[i]) {
-      console.log(artOutcome, billThresholds[i]);
-      scarcityLevel = i + 1;
+  for (let i = 1; i < billThresholds.length; i++) {
+    if (billThresholds[i - 1] > +artOutcome > billThresholds[i]) {
+      scarcityLevel = i;
       break;
     }
   }
 
-  console.log(`The bill's scarcity level is: Level ${scarcityLevel}`);
   return scarcityLevel;
+};
+
+export const digits_count = (n) => {
+  var count = 0;
+  if (n >= 1) ++count;
+
+  while (n / 10 >= 1) {
+    n /= 10;
+    ++count;
+  }
+
+  return count;
 };

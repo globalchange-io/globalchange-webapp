@@ -233,16 +233,16 @@ const Pay = () => {
       }
       setInfo(tempdata);
       console.log(tempdata, "ArtSeed");
-      let artOutComeLength = [];
+      let artOutComeNumber = [];
       let artOutComeLevel = [];
       tempdata.map((item) => {
-        artOutComeLength.push(item.numbersOnly.length);
+        artOutComeNumber.push(item.numbersOnly);
         artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
       });
-      console.log(artOutComeLength, "ArtSeedLength");
+      console.log(artOutComeNumber, "ArtSeedLength");
       console.log(artOutComeLevel, "artOutComeLevel");
       handler();
-      Test(artOutComeLength, artOutComeLevel).then((res) => {
+      Test(artOutComeNumber, artOutComeLevel).then((res) => {
         console.log(
           res,
           "image url array... if app didn't find url, in modal it output question mark image with some info. "
