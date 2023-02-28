@@ -19,7 +19,13 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
+import {
+  arrayKill,
+  artOutCome,
+  ImageCheck,
+  layerGifOnImage,
+  ScarcityLevel,
+} from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import Test from "../../components/test";
@@ -321,7 +327,6 @@ const Pay = () => {
       console.log(e);
     }
   };
-
   const mint = async (mineSequence, faceValueText) => {
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
@@ -389,6 +394,7 @@ const Pay = () => {
       console.log(e);
     }
   };
+
   return (
     <>
       <Wrapper>

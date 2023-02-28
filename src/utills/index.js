@@ -1,5 +1,5 @@
 import sha256 from "crypto-js/sha256";
-import { read, utils } from "xlsx";
+import axios from "axios";
 import { Server } from "stellar-sdk";
 import {
   onegc,
@@ -91,26 +91,14 @@ export const ImageCheck = (memoname) => {
 /* load 'fs' for readFile and writeFile support */
 
 export const layerGifOnImage = async (url) => {
-  const f = await (await fetch(url)).arrayBuffer();
-  const workbook = read(f);
-
-  const data = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-  const artlist = data.filter(
-    (item) =>
-      item["GlobalChange.io"] === "Link to Art" ||
-      item["GlobalChange.io"] === "Link to Art or paste image here"
-  )[0];
-  console.log(artlist, "url data", url, "url by level");
-  // artlist.map((item) => {
-  console.log(artlist[Object.keys(artlist)["Instructions for Creators"]]);
-  return artlist[Object.keys(artlist)["Instructions for Creators"]];
-  // });
-  // console.log(
-  //   Object.keys(artlist)[Object.key  s(artlist).length - 1] +
-  //     "---------" +
-  //     artlist[Object.keys(artlist)[Object.keys(artlist).length - 1]]
-  // );
-  // console.log(artlist, "artlist", url);
+  try {
+    // Construct the Pinata API URL with the IPFS hash
+    const apiUrl = `https://gateway.pinata.cloud/ipfs/QmQtorw5H79kzABY758Z21acUWzgE14wvyADp3BVETApQy`;
+    const res = await (await fetch(apiUrl)).json();
+    return res.title;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const ScarcityLevel = (denomination, artOutcome) => {
@@ -143,7 +131,7 @@ export const ScarcityLevel = (denomination, artOutcome) => {
     ],
   };
   const billThresholds = thresholds[+denomination2];
-  let scarcityLevel = 0;
+  let scarcityLevel = 1;
   for (let i = 1; i < billThresholds.length; i++) {
     if (billThresholds[i - 1] > +artOutcome > billThresholds[i]) {
       scarcityLevel = i;

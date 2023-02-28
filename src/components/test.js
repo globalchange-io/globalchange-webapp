@@ -11,8 +11,8 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
   const recentLedgerNumber = "40861697";
   let memoTransactions = [];
   const accounts = [
-    { address: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK" },
-    { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
+    // { address: "GB6O5KIWNM5VMK6NYYV573PTDT7ZJBHXWLBBJXTY4LZDTC47Q2R4RX6S" },
+    // { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
     { address: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP" },
     { address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI" },
     { address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI" },
@@ -29,32 +29,12 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
 
   // Replace with the scarcity level that the user entered
   const scarcityLevel1 = 51;
-  const scarcityLevel2 = 63;
-
-  // const filterDuplicateMemos = (transactions) => {
-  //   // Set to store unique memos
-  //   const uniqueMemos = new Set();
-
-  //   // Filter out transactions with duplicate memos
-  //   return transactions.filter((transaction) => {
-  //     // Check if the memo is blank or consists only of spaces
-  //     if (transaction.memo.trim() === "") {
-  //       return false;
-  //     }
-
-  //     // Check if the memo has already been seen
-  //     if (uniqueMemos.has(transaction.memo)) {
-  //       return false;
-  //     }
-
-  //     // Add the memo to the set of unique memos
-  //     uniqueMemos.add(transaction.memo);
-  //     return true;
-  //   });
-  // };
+  const scarcityLevel2 = 62;
+  const checkreal = 63;
 
   try {
     let arr = [];
+    let arr2 = [];
     for (let k = 0; k < artOutComeLevel.length; k++) {
       for (let j = 0; j < accounts.length; j++) {
         let tran = await server
@@ -79,7 +59,10 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
                 .call()
                 // eslint-disable-next-line no-loop-func
                 .then(function (resp) {
-                  console.log(resp.records[0].amount * Math.pow(10, 7));
+                  console.log(resp, "resp");
+                  if (resp.records[0].amount * Math.pow(10, 7) === checkreal) {
+                    arr2.push(tran.records[i].memo);
+                  }
                   if (
                     scarcityLevel2 >=
                       resp.records[0].amount * Math.pow(10, 7) &&
@@ -100,32 +83,42 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
           }
         }
       }
-      // const filteredComplete = filterDuplicateMemos(memoTransactions);
+      let trans = [];
+      for (let i = 0; i < memoTransactions.length; i++) {
+        const object1 = memoTransactions[i];
+        const isNameRepeated = arr2.some((object2) => object2 === object1.memo);
 
-      const sortedTransactions = memoTransactions.sort(
+        if (!isNameRepeated) {
+          console.log(object1, isNameRepeated, "Asdfadsfsdfsdaf");
+          trans.push(object1);
+        }
+      }
+
+      const sortedTransactions = trans.sort(
         (a, b) => a.paging_token - b.paging_token
       );
 
-      const templength = digits_count(memoTransactions.length);
+      const templength = digits_count(trans.length);
       const artcycle = artOutComeNumber[k].slice(
         artOutComeNumber[k].length - +templength
       );
 
       console.log(
         sortedTransactions,
+        trans,
         "transaction that has url and pass some checking",
         artcycle
       );
       await Promise.all(
         sortedTransactions.map(async (items, key) => {
           if (key + 1 === +artcycle % sortedTransactions.length) {
+            console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
             await layerGifOnImage(items.memo).then((res) => {
               arr.push(res);
             });
           }
         })
       );
-      // eslint-disable-next-line array-callback-return
     }
 
     return arr;
