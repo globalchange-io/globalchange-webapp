@@ -12,7 +12,6 @@ const UploadIndex = () => {
     videofile: "",
     resales: "",
     text: "",
-    mintime: "",
   });
   const [url, setUrl] = useState();
   const handleChange = (e) => {
@@ -82,13 +81,7 @@ const UploadIndex = () => {
         name="resales"
         label="Enter Stellar Lumens account number to receive % of future resales "
       />
-      <Input
-        clearable
-        onChange={handleChange}
-        fullWidth
-        name="mintime"
-        label="Enter Mintime "
-      />
+
       <Button color="primary" auto ghost onClick={handleClick}>
         Generate JSON
       </Button>
