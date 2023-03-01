@@ -1,5 +1,7 @@
 import StellarSdk from "stellar-sdk";
 import { checkURL, digits_count, layerGifOnImage } from "../utills";
+import EventSource from "eventsource";
+
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
 const Test = async (artOutComeNumber, artOutComeLevel) => {
@@ -17,54 +19,59 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
     { address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI" },
     { address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI" },
   ];
-  // const accounts = [
-  //   { address: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A" },
-  //   { address: "GBSPK7XJDK3BB2HUO4DTANKWWVLTEKAK4NTTLVY56YYHIYQUFX5CJMAK" },
-  //   { address: "GDWNMXOVH3GDYXFBD66U5OCHO33SUOSY37O6ZSZBCG33IZ7N6ZONZGFW" },
-  //   { address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI" },
-  //   { address: "GANLOWYTGSBJC6HK7PNWCYGTSPSXYQMJHKEK7B7FOTSU5HB2QWTJJBZW" },
-  // ];
-
-  // Replace with the five account numbers that the user entered
 
   // Replace with the scarcity level that the user entered
   const scarcityLevel1 = 51;
   const scarcityLevel2 = 62;
   const checkreal = 63;
+
   // Replace with the start time of the 1990s in Unix time
   const startOf1990s = 631152000;
 
   // Replace with the end time of the 1990s in Unix time
   const endOf1990s = 946684799;
 
+  const getTransactions = async (account) => {
+    let url = `https://horizon.stellar.org/accounts/${account}/transactions?order=desc&limit=200`;
+    let transactionsArray = [];
+
+    while (true) {
+      const response = await fetch(url);
+      const data = await response.json();
+      transactionsArray = transactionsArray.concat(data._embedded.records);
+
+      if (
+        !data._links.next ||
+        data._links.next.href === data._links.self.href
+      ) {
+        break;
+      }
+
+      url = data._links.next.href;
+      console.log(transactionsArray, data._links, url);
+    }
+    return transactionsArray;
+  };
+
+  // console.log(memoTransactions);
   try {
     let arr = [];
     let arr2 = [];
     for (let k = 0; k < artOutComeLevel.length; k++) {
       for (let j = 0; j < accounts.length; j++) {
-        let tran = await server
-          .transactions()
-          .forAccount(accounts[j].address)
-          .limit("200")
-          .call();
-        if (!tran.records.length) {
-          return;
-        }
+        let tran = await getTransactions(accounts[j].address);
         // // Do something with the transactions
-        for (let i = 0; i < tran.records.length; i++) {
+        for (let i = 0; i < tran.length; i++) {
           if (
-            tran?.records[i]?.preconditions?.timebounds?.min_time >=
-              startOf1990s &&
-            tran?.records[i]?.preconditions?.timebounds?.min_time <= endOf1990s
+            tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
+            tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
           ) {
-            if (checkURL(tran.records[i].memo)) {
-              if (
-                tran.records[i].memo &&
-                +tran.records[i].ledger_attr >= +recentLedgerNumber
-              ) {
+            if (checkURL(tran[i].memo)) {
+              console.log(tran[i].memo);
+              if (tran[i].memo && +tran[i].ledger_attr >= +recentLedgerNumber) {
                 await server
                   .effects()
-                  .forTransaction(tran.records[i].hash)
+                  .forTransaction(tran[i].hash)
                   .limit("1")
                   .call()
                   // eslint-disable-next-line no-loop-func
