@@ -105,7 +105,7 @@ const SendArt = () => {
       allinfo?.jsonurl
     );
 
-    const date = Math.floor(new Date(startDate) / 1000);
+    const date = Math.floor(new Date(startDate) / 1000) + 300;
     console.log(date);
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
