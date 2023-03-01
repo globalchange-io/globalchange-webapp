@@ -175,6 +175,8 @@ const SendArt = () => {
       <DatePicker
         selected={startDate}
         onChange={(date) => setStartDate(date)}
+        minDate={new Date("1990-01-01")}
+        maxDate={new Date("1999-12-31")}
       />
       <Button color="primary" auto ghost onClick={handleClick}>
         SendArt
