@@ -31,6 +31,11 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
   const scarcityLevel1 = 51;
   const scarcityLevel2 = 62;
   const checkreal = 63;
+  // Replace with the start time of the 1990s in Unix time
+  const startOf1990s = 631152000;
+
+  // Replace with the end time of the 1990s in Unix time
+  const endOf1990s = 946684799;
 
   try {
     let arr = [];
@@ -47,80 +52,93 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
         }
         // // Do something with the transactions
         for (let i = 0; i < tran.records.length; i++) {
-          if (checkURL(tran.records[i].memo)) {
-            if (
-              tran.records[i].memo &&
-              +tran.records[i].ledger_attr >= +recentLedgerNumber
-            ) {
-              await server
-                .effects()
-                .forTransaction(tran.records[i].hash)
-                .limit("1")
-                .call()
-                // eslint-disable-next-line no-loop-func
-                .then(function (resp) {
-                  console.log(resp, "resp");
-                  if (resp.records[0].amount * Math.pow(10, 7) === checkreal) {
-                    arr2.push(tran.records[i].memo);
-                  }
-                  if (
-                    scarcityLevel2 >=
-                      resp.records[0].amount * Math.pow(10, 7) &&
-                    resp.records[0].amount * Math.pow(10, 7) >= scarcityLevel1
-                  ) {
+          if (
+            tran?.records[i]?.preconditions?.timebounds?.min_time >=
+              startOf1990s &&
+            tran?.records[i]?.preconditions?.timebounds?.min_time <= endOf1990s
+          ) {
+            if (checkURL(tran.records[i].memo)) {
+              if (
+                tran.records[i].memo &&
+                +tran.records[i].ledger_attr >= +recentLedgerNumber
+              ) {
+                await server
+                  .effects()
+                  .forTransaction(tran.records[i].hash)
+                  .limit("1")
+                  .call()
+                  // eslint-disable-next-line no-loop-func
+                  .then(function (resp) {
+                    console.log(resp, "resp");
                     if (
                       resp.records[0].amount * Math.pow(10, 7) ===
-                      50 + artOutComeLevel[k]
+                      checkreal
                     ) {
-                      memoTransactions.push(tran.records[i]);
+                      arr2.push(tran.records[i].memo);
                     }
-                  }
-                })
-                .catch(function (err) {
-                  console.error(err);
-                });
+                    if (
+                      scarcityLevel2 >=
+                        resp.records[0].amount * Math.pow(10, 7) &&
+                      resp.records[0].amount * Math.pow(10, 7) >= scarcityLevel1
+                    ) {
+                      if (
+                        resp.records[0].amount * Math.pow(10, 7) ===
+                        50 + artOutComeLevel[k]
+                      ) {
+                        memoTransactions.push(tran.records[i]);
+                      }
+                    }
+                  })
+                  .catch(function (err) {
+                    console.error(err);
+                  });
+              }
             }
           }
         }
       }
       let trans = [];
-      for (let i = 0; i < memoTransactions.length; i++) {
-        const object1 = memoTransactions[i];
-        const isNameRepeated = arr2.some((object2) => object2 === object1.memo);
+      if (memoTransactions.length > 0) {
+        for (let i = 0; i < memoTransactions.length; i++) {
+          const object1 = memoTransactions[i];
+          const isNameRepeated = arr2.some(
+            (object2) => object2 === object1.memo
+          );
 
-        if (!isNameRepeated) {
-          console.log(object1, isNameRepeated, "Asdfadsfsdfsdaf");
-          trans.push(object1);
-        }
-      }
-
-      const sortedTransactions = trans.sort(
-        (a, b) => a.paging_token - b.paging_token
-      );
-
-      const templength = digits_count(trans.length);
-      const artcycle = artOutComeNumber[k].slice(
-        artOutComeNumber[k].length - +templength
-      );
-
-      console.log(
-        sortedTransactions,
-        trans,
-        "transaction that has url and pass some checking",
-        artcycle
-      );
-      await Promise.all(
-        sortedTransactions.map(async (items, key) => {
-          if (key + 1 === +artcycle % sortedTransactions.length) {
-            console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-            await layerGifOnImage(items.memo).then((res) => {
-              arr.push(res);
-            });
+          if (!isNameRepeated) {
+            console.log(object1, isNameRepeated, "Asdfadsfsdfsdaf");
+            trans.push(object1);
           }
-        })
-      );
-    }
+        }
 
+        const sortedTransactions = trans.sort(
+          (a, b) => a.paging_token - b.paging_token
+        );
+
+        const templength = digits_count(trans.length);
+        const artcycle = artOutComeNumber[k].slice(
+          artOutComeNumber[k].length - +templength
+        );
+
+        console.log(
+          sortedTransactions,
+          trans,
+          "transaction that has url and pass some checking",
+          artcycle
+        );
+        await Promise.all(
+          sortedTransactions.map(async (items, key) => {
+            if (key + 1 === +artcycle % sortedTransactions.length) {
+              console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
+
+              await layerGifOnImage(items.memo).then((res) => {
+                arr.push(res);
+              });
+            }
+          })
+        );
+      }
+    }
     return arr;
   } catch (error) {
     console.error(error);
