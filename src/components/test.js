@@ -1,6 +1,5 @@
 import StellarSdk from "stellar-sdk";
 import { checkURL, digits_count, layerGifOnImage } from "../utills";
-import EventSource from "eventsource";
 
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
@@ -8,15 +7,17 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
   console.log(
     "in here I use mainnet account for test... GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK  --- GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA --- GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP --- GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI --- GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI"
   );
+  console.log(artOutComeNumber, artOutComeLevel);
+
   // Replace with your own horizon server URL
   // Replace with the recent ledger number that the user entered
   const recentLedgerNumber = "40861697";
   let memoTransactions = [];
   const accounts = [
-    // { address: "GB6O5KIWNM5VMK6NYYV573PTDT7ZJBHXWLBBJXTY4LZDTC47Q2R4RX6S" },
-    // { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
+    { address: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK" },
+    { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
     { address: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP" },
-    { address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI" },
+    { address: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA" },
     { address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI" },
   ];
 
@@ -48,12 +49,10 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
       }
 
       url = data._links.next.href;
-      console.log(transactionsArray, data._links, url);
     }
     return transactionsArray;
   };
 
-  // console.log(memoTransactions);
   try {
     let arr = [];
     let arr2 = [];
@@ -67,8 +66,8 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
             tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
           ) {
             if (checkURL(tran[i].memo)) {
-              console.log(tran[i].memo);
-              if (tran[i].memo && +tran[i].ledger_attr >= +recentLedgerNumber) {
+              console.log(tran[i], "asdf");
+              if (+tran[i].ledger >= +recentLedgerNumber) {
                 await server
                   .effects()
                   .forTransaction(tran[i].hash)
@@ -76,23 +75,24 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
                   .call()
                   // eslint-disable-next-line no-loop-func
                   .then(function (resp) {
-                    console.log(resp, "resp");
                     if (
-                      resp.records[0].amount * Math.pow(10, 7) ===
+                      resp?.records[0]?.amount * Math.pow(10, 7) ===
                       checkreal
                     ) {
-                      arr2.push(tran.records[i].memo);
-                    }
-                    if (
-                      scarcityLevel2 >=
-                        resp.records[0].amount * Math.pow(10, 7) &&
-                      resp.records[0].amount * Math.pow(10, 7) >= scarcityLevel1
-                    ) {
+                      arr2.push(tran[i].memo);
+                    } else {
                       if (
-                        resp.records[0].amount * Math.pow(10, 7) ===
-                        50 + artOutComeLevel[k]
+                        scarcityLevel2 >=
+                          resp.records[0].amount * Math.pow(10, 7) &&
+                        resp.records[0].amount * Math.pow(10, 7) >=
+                          scarcityLevel1
                       ) {
-                        memoTransactions.push(tran.records[i]);
+                        if (
+                          resp.records[0].amount * Math.pow(10, 7) ===
+                          50 + artOutComeLevel[k]
+                        ) {
+                          memoTransactions.push(tran[i]);
+                        }
                       }
                     }
                   })
@@ -105,6 +105,7 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
         }
       }
       let trans = [];
+      console.log(memoTransactions, "arr", arr2);
       if (memoTransactions.length > 0) {
         for (let i = 0; i < memoTransactions.length; i++) {
           const object1 = memoTransactions[i];
@@ -135,9 +136,9 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
         );
         await Promise.all(
           sortedTransactions.map(async (items, key) => {
-            if (key + 1 === +artcycle % sortedTransactions.length) {
+            if (key === +artcycle % sortedTransactions.length) {
               console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-
+              console.log(items.memo);
               await layerGifOnImage(items.memo).then((res) => {
                 arr.push(res);
               });

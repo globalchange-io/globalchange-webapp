@@ -23,10 +23,10 @@ const SendArt = () => {
   const [startDate, setStartDate] = useState(new Date("1990-01-01"));
   const [hash, setHash] = useState();
   const sourceKeypair = Keypair.fromSecret(
-    "SC6ZB2VJTD2Y4GNW3R4WQEHGNF7ZBODHEYRVGXIFKJJU75WK7ADI64TU"
+    "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N"
   );
   const sourcePublicKey = sourceKeypair.publicKey();
-  const server = new Server("https://horizon-testnet.stellar.org");
+  const server = new Server("https://horizon.stellar.org");
 
   const [nonprofit, setNonprofit] = useState([]);
 
@@ -34,63 +34,63 @@ const SendArt = () => {
     { name: "none", value: "none" },
     {
       name: "Bali Food Bank",
-      value: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A",
+      value: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK",
     },
     {
       name: "Heifer International",
-      value: "GBSPK7XJDK3BB2HUO4DTANKWWVLTEKAK4NTTLVY56YYHIYQUFX5CJMAK",
+      value: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA",
     },
     {
       name: "Crypto for the Homeless",
-      value: "GDWNMXOVH3GDYXFBD66U5OCHO33SUOSY37O6ZSZBCG33IZ7N6ZONZGFW",
+      value: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP",
     },
     {
       name: "Women Who Code",
-      value: "GANLOWYTGSBJC6HK7PNWCYGTSPSXYQMJHKEK7B7FOTSU5HB2QWTJJBZW",
+      value: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA",
     },
     {
       name: "Aid for Ukraine",
-      value: "GCTW6KJYUJRQVTKQDMWH4EBT33DMGO2ZNLUDQIPS4KSZ6UXQAT2DAFHU",
+      value: "GD7ZVRSGHETEYLB4XUVFVGFWJKNDHORHAY72HZVXYFINUNZSRVABKVSH",
     },
     {
       name: " University of San Francisco",
-      value: "GAPPHYCJJAY3XUYEVRUSVZYZVVTMQ2JNSRHQW2AVBAHZX3MD5QNMFABY",
+      value: "GAO63FGKTVLS43OBSL6THTNB2R4IQHZOFYKWTV5L6ZOHLTB4MRPBTQ3X",
     },
     {
       name: "Freedom of the Press Foundation",
-      value: "GBLT2J3A2U3ELWIJNIAAJOF6JYOHNBDQK3QOVOYX35DXIIN2G6TJJZG7",
+      value: "GB5A3OA657UWF3BN7WU4XFFWT333HFP2KFK2OFAXPEL3BBGQ7QLRNASG",
     },
     {
       name: "Coin Center",
-      value: "GCO5W2ZUS2PIEZDOEY5JNP5P3QXAZRDHGGIPFTYQQ4ARSA3YH4GXPR2W",
+      value: "GBKCLZSQZQR5MM6WWL3CUJWX6QSE74XODUU34BBGT7SVD32BWJQIX7ER",
     },
     {
       name: "Global Emancipation Network",
-      value: "GCLKR3M4SA3Y3MQ7XB7HG6IBTSE7U6FSKSBOFRJRN542FSH7GTLTAKOP",
+      value: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
     },
     {
       name: "For Living Independence",
-      value: "GBJEYQRA6DEPQ4LS6A4LQVREGSPLGHBAACBHXWLXQM2MVHAUBOJ7QCMQ",
+      value: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI",
     },
     {
       name: "EmpowerED Pathways",
-      value: "GALUY22PHA4X5Q4GXOMXNPYKMMTSMOLOI42NHRFJXNKF6TQU726U35B6",
+      value: "GB6FL35A2476K7OQ5EIJCOHJNZECN6HTIJKQV5TZ5FSE5CXGYU2RD25L",
     },
     {
       name: "Fight for the Future Fund",
-      value: "GCLTH3R5CUICCLJUFJM6Z62ZCQMCLRKPJT3O7QB5CJXJ2FNXIXVHZGB2",
+      value: "GCGNWKCJ3KHRLPM3TM6N7D3W5YKDJFL6A2YCXFXNMRTZ4Q66MEMZ6FI2",
     },
     {
       name: "Solar Dos Abraxis",
-      value: "GB7V7BCGPGZGLYBQDHIU7LBV6AWEJGRRHJVAWELWTTJ77B2XVMZTHO3I",
+      value: "GDCQ5TKZXF7FSILKZNBN274RKZGVVDJ4G3NXAJLPIFUTXMEOQ4JODM5C",
     },
     {
       name: " Tor Project",
-      value: "GAS4FM36L6FGDVRDARCKAPWWILS257ILNBGIKVAJOLN22QJMSBFTY3KD",
+      value: "GABWGQEQESRX5TKDTPIYJFPKGJDMEW6VLOOLBTIFPJIN7XT6KAFXJQPJ",
     },
     {
       name: "Stellar.expert",
-      value: "GCTORL7ZPVDJ436DDHDNJI2FJQKIS46V7KZDBJJ5SFBT7WVIKYMGPEIV",
+      value: "GDQ75AS5VSH3ZHZI3P4TAVAOOSNHN346KXJOPZVQMMS27KNCC5TOQEXP",
     },
   ]);
   const handleChange = (e) => {
@@ -106,13 +106,12 @@ const SendArt = () => {
     );
 
     const date = Math.floor(new Date(startDate) / 1000) + 300;
-    console.log(date);
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
       fee,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
       timebounds: {
         minTime: date,
         maxTime: "0",

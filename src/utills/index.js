@@ -92,10 +92,8 @@ export const ImageCheck = (memoname) => {
 
 export const layerGifOnImage = async (url) => {
   try {
-    // Construct the Pinata API URL with the IPFS hash
-    const apiUrl = `https://gateway.pinata.cloud/ipfs/QmQtorw5H79kzABY758Z21acUWzgE14wvyADp3BVETApQy`;
-    const res = await (await fetch(apiUrl)).json();
-    return res.title;
+    const res = await (await fetch(url)).json();
+    return res.jpgfile;
   } catch (error) {
     console.error(error);
   }
