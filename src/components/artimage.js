@@ -3,7 +3,7 @@ import { checkURL, digits_count, layerGifOnImage } from "../utills";
 
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
-const Test = async (artOutComeNumber, artOutComeLevel) => {
+const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
   console.log(
     "in here I use mainnet account for test... GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK  --- GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA --- GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP --- GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI --- GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI"
   );
@@ -14,11 +14,26 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
   const recentLedgerNumber = "40861697";
   let memoTransactions = [];
   const accounts = [
-    { address: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK" },
-    { address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA" },
-    { address: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP" },
-    { address: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA" },
-    { address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI" },
+    {
+      address: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK",
+      label: "nonprofit1",
+    },
+    {
+      address: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA",
+      label: "nonprofit2",
+    },
+    {
+      address: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP",
+      label: "nonprofit3",
+    },
+    {
+      address: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA",
+      label: "nonprofit4",
+    },
+    {
+      address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
+      label: "nonprofit5",
+    },
   ];
 
   // Replace with the scarcity level that the user entered
@@ -56,6 +71,7 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
   try {
     let arr = [];
     let arr2 = [];
+    let arr3 = [];
     for (let k = 0; k < artOutComeLevel.length; k++) {
       for (let j = 0; j < accounts.length; j++) {
         let tran = await getTransactions(accounts[j].address);
@@ -127,7 +143,7 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
         const artcycle = artOutComeNumber[k].slice(
           artOutComeNumber[k].length - +templength
         );
-
+        arr3.push(sortedTransactions);
         console.log(
           sortedTransactions,
           trans,
@@ -147,10 +163,11 @@ const Test = async (artOutComeNumber, artOutComeLevel) => {
         );
       }
     }
-    return arr;
+    const data = [{ alldata: arr, artlistdata: arr3 }];
+    return data;
   } catch (error) {
     console.error(error);
   }
 };
 
-export default Test;
+export default ArtImage;

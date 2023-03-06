@@ -25,13 +25,11 @@ const Header = () => {
       <WrapperContent>
         <DefaultImage src={logo} />
         <MenuContent>
-          <MenuContentItem to="/home#ourstory">Mine</MenuContentItem>
-          <MenuContentItem to="/home#map">Pay</MenuContentItem>
-          <MenuContentItem to="/home#team">Manage/My Gallery</MenuContentItem>
-          <MenuContentItem to="/home#faq">
-            Check-in printed bill
-          </MenuContentItem>
-        </MenuContent>{" "}
+          <MenuContentItem to="/">Mine/pay</MenuContentItem>
+          <MenuContentItem to="/upload">Create JSON</MenuContentItem>
+          <MenuContentItem to="/send">Send Art</MenuContentItem>
+          <MenuContentItem to="/visualizer">Visualizer</MenuContentItem>
+        </MenuContent>
         <ButtonGroup>
           {!toggle ? (
             <FaServer onClick={toggleMenu} />
@@ -41,14 +39,10 @@ const Header = () => {
               <DropdownMenu>
                 <MenuContent2>
                   <DefaultImage src={logo} />
-                  <MenuContentItem to="/home#ourstory">Mine</MenuContentItem>
-                  <MenuContentItem to="/home#map">Pay</MenuContentItem>
-                  <MenuContentItem to="/home#team">
-                    Manage/My Gallery
-                  </MenuContentItem>
-                  <MenuContentItem to="/home#faq">
-                    Check-in printed bill
-                  </MenuContentItem>
+                  <MenuContentItem to="/">Mine/pay</MenuContentItem>
+                  <MenuContentItem to="/upload">Create JSON</MenuContentItem>
+                  <MenuContentItem to="/send">Send </MenuContentItem>
+                  <MenuContentItem to="/visualizer">Visualizer</MenuContentItem>
                 </MenuContent2>
               </DropdownMenu>
             </Row>

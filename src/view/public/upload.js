@@ -30,8 +30,6 @@ const UploadIndex = () => {
       })
       .then(async (response) => {
         const pinataurl = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
-        // const pinataurl = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
-
         const url = `https://tinyurl.com/api-create.php?url=${pinataurl}`;
         const tinyresponse = await fetch(url, {
           headers: { "Content-Type": "application/json" },

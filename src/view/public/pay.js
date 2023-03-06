@@ -19,16 +19,10 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import {
-  arrayKill,
-  artOutCome,
-  ImageCheck,
-  layerGifOnImage,
-  ScarcityLevel,
-} from "../../utills";
+import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
-import Test from "../../components/test";
+import ArtImage from "../../components/artimage";
 import { useAlert } from "react-alert";
 import Analog from "../../components/analog";
 import {
@@ -46,7 +40,6 @@ import {
   Card12,
   Card13,
   Card14,
-  coinimage,
   Question,
 } from "../../config/images";
 import { Loading } from "@nextui-org/react";
@@ -64,67 +57,68 @@ const Pay = () => {
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalXLM, setTotalXML] = useState(0);
   const [sendEachActual, setSendEachActual] = useState(0);
+  const [level, setLevel] = useState();
   const [nonprofitDetail, setNonprofitDetail] = useState([
     { name: "none", value: "none" },
     {
       name: "Bali Food Bank",
-      value: "GBVKR2N54PESLPY57TJ6L4JHNMNBXI5SWRGRWEZV4LU73DC5DI26545A",
+      value: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK",
     },
     {
       name: "Heifer International",
-      value: "GBSPK7XJDK3BB2HUO4DTANKWWVLTEKAK4NTTLVY56YYHIYQUFX5CJMAK",
+      value: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA",
     },
     {
       name: "Crypto for the Homeless",
-      value: "GDWNMXOVH3GDYXFBD66U5OCHO33SUOSY37O6ZSZBCG33IZ7N6ZONZGFW",
+      value: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP",
     },
     {
       name: "Women Who Code",
-      value: "GANLOWYTGSBJC6HK7PNWCYGTSPSXYQMJHKEK7B7FOTSU5HB2QWTJJBZW",
+      value: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA",
     },
     {
       name: "Aid for Ukraine",
-      value: "GCTW6KJYUJRQVTKQDMWH4EBT33DMGO2ZNLUDQIPS4KSZ6UXQAT2DAFHU",
+      value: "GD7ZVRSGHETEYLB4XUVFVGFWJKNDHORHAY72HZVXYFINUNZSRVABKVSH",
     },
     {
       name: " University of San Francisco",
-      value: "GAPPHYCJJAY3XUYEVRUSVZYZVVTMQ2JNSRHQW2AVBAHZX3MD5QNMFABY",
+      value: "GAO63FGKTVLS43OBSL6THTNB2R4IQHZOFYKWTV5L6ZOHLTB4MRPBTQ3X",
     },
     {
       name: "Freedom of the Press Foundation",
-      value: "GBLT2J3A2U3ELWIJNIAAJOF6JYOHNBDQK3QOVOYX35DXIIN2G6TJJZG7",
+      value: "GB5A3OA657UWF3BN7WU4XFFWT333HFP2KFK2OFAXPEL3BBGQ7QLRNASG",
     },
     {
       name: "Coin Center",
-      value: "GCO5W2ZUS2PIEZDOEY5JNP5P3QXAZRDHGGIPFTYQQ4ARSA3YH4GXPR2W",
+      value: "GBKCLZSQZQR5MM6WWL3CUJWX6QSE74XODUU34BBGT7SVD32BWJQIX7ER",
     },
     {
       name: "Global Emancipation Network",
-      value: "GCLKR3M4SA3Y3MQ7XB7HG6IBTSE7U6FSKSBOFRJRN542FSH7GTLTAKOP",
+      value: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
     },
     {
       name: "For Living Independence",
-      value: "GBJEYQRA6DEPQ4LS6A4LQVREGSPLGHBAACBHXWLXQM2MVHAUBOJ7QCMQ",
+      value: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI",
     },
     {
       name: "EmpowerED Pathways",
-      value: "GALUY22PHA4X5Q4GXOMXNPYKMMTSMOLOI42NHRFJXNKF6TQU726U35B6",
+      value: "GB6FL35A2476K7OQ5EIJCOHJNZECN6HTIJKQV5TZ5FSE5CXGYU2RD25L",
     },
     {
       name: "Fight for the Future Fund",
-      value: "GCLTH3R5CUICCLJUFJM6Z62ZCQMCLRKPJT3O7QB5CJXJ2FNXIXVHZGB2",
+      value: "GCGNWKCJ3KHRLPM3TM6N7D3W5YKDJFL6A2YCXFXNMRTZ4Q66MEMZ6FI2",
     },
     {
       name: "Solar Dos Abraxis",
-      value: "GB7V7BCGPGZGLYBQDHIU7LBV6AWEJGRRHJVAWELWTTJ77B2XVMZTHO3I",
+      value: "GDCQ5TKZXF7FSILKZNBN274RKZGVVDJ4G3NXAJLPIFUTXMEOQ4JODM5C",
     },
     {
       name: " Tor Project",
-      value: "GAS4FM36L6FGDVRDARCKAPWWILS257ILNBGIKVAJOLN22QJMSBFTY3KD",
+      value: "GABWGQEQESRX5TKDTPIYJFPKGJDMEW6VLOOLBTIFPJIN7XT6KAFXJQPJ",
     },
     {
       name: "Stellar.expert",
-      value: "GCTORL7ZPVDJ436DDHDNJI2FJQKIS46V7KZDBJJ5SFBT7WVIKYMGPEIV",
+      value: "GDQ75AS5VSH3ZHZI3P4TAVAOOSNHN346KXJOPZVQMMS27KNCC5TOQEXP",
     },
   ]);
   const [info, setInfo] = useState();
@@ -135,7 +129,7 @@ const Pay = () => {
     accountKey: "",
     oldnonprofit: "",
     newnonprofit: "",
-    secretKey: "SC6ZB2VJTD2Y4GNW3R4WQEHGNF7ZBODHEYRVGXIFKJJU75WK7ADI64TU",
+    secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
     newnonprofitname: "",
   });
   const [allValues, setAllValues] = useState({
@@ -144,10 +138,10 @@ const Pay = () => {
     born: "2022.12.16",
     forwhat: "nonprofit",
   });
-  const [image, setImage] = useState([]);
+  const [alldata, setAllData] = useState([]);
   const sourceKeypair = Keypair.fromSecret(inputInfo.secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
-  const server = new Server("https://horizon-testnet.stellar.org");
+  const server = new Server("https://horizon.stellar.org");
   const getInfo = (e) => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
   };
@@ -237,23 +231,23 @@ const Pay = () => {
           }
         }
       }
-      setInfo(tempdata);
-      console.log(tempdata, "ArtSeed");
       let artOutComeNumber = [];
       let artOutComeLevel = [];
       tempdata.map((item) => {
         artOutComeNumber.push(item.numbersOnly);
         artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
       });
+      setInfo(tempdata);
       console.log(artOutComeNumber, "ArtSeedLength");
       console.log(artOutComeLevel, "artOutComeLevel");
+      setLevel(artOutComeLevel);
       handler();
-      Test(artOutComeNumber, artOutComeLevel).then((res) => {
+      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
         console.log(
           res,
           "image url array... if app didn't find url, in modal it output question mark image with some info. "
         );
-        setImage(res);
+        setAllData(res[0].alldata);
         setLoading(false);
       });
     }
@@ -273,7 +267,7 @@ const Pay = () => {
     const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
       fee,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
     })
       .addOperation(
         Operation.payment({
@@ -332,7 +326,7 @@ const Pay = () => {
     const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
       fee,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: Networks.PUBLIC,
     })
       .addOperation(
         Operation.payment({
@@ -376,6 +370,7 @@ const Pay = () => {
 
     try {
       const transactionResult = await server.submitTransaction(transaction);
+      console.log(transactionResult, "transactionResult");
       bills.push({
         faceValueText: faceValueText,
         serialNumber: transactionResult.id,
@@ -640,11 +635,21 @@ const Pay = () => {
               ) : (
                 info &&
                 info.map((item, key) => (
-                  <ImageContainer key={key} memoname={item.memoname}>
+                  <ImageContainer
+                    key={key}
+                    memoname={item.memoname}
+                    level={level[key]}
+                  >
+                    {console.log(level[key], level)}
                     <ImageWrapper>
                       <Row>{item.checkbill}</Row>
                       <ImageGroup2>
-                        <DefaultImage src={image[key] ?? Question} />
+                        <DefaultImage
+                          src={
+                            alldata[key].jpgfile ??
+                            ImageCheck(item.memoname, level[key])
+                          }
+                        />
                         <DetailWrapper>
                           <TokenEditor>
                             <Text>Title</Text>
@@ -804,7 +809,8 @@ const TextContainer2 = styled(Col)`
   height: 100px;
 `;
 const ImageContainer = styled(Row)`
-  background-image: ${(props) => `url(${ImageCheck(props.memoname)})`};
+  background-image: ${(props) =>
+    `url(${ImageCheck(props.memoname, props.level)})`};
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;

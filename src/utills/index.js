@@ -31,7 +31,7 @@ export const checkURL = (URL) => {
 };
 
 export const artOutCome = async (checkbill) => {
-  const server = new Server("https://horizon-testnet.stellar.org");
+  const server = new Server("https://horizon.stellar.org");
   return await server
     .transactions()
     .transaction(checkbill)
@@ -48,9 +48,15 @@ export const artOutCome = async (checkbill) => {
           const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
           console.log("level", "1 level");
           const data = {
+            account: res.source_account,
             numbersOnly: numbersOnly,
             checkbill: checkbill,
             memoname: memoname[0],
+            allmemo: res.memo,
+            sequence: res.source_account_sequence,
+            redger: ledgerhash,
+            redgerhash: resp.hash,
+            billartseed: hash,
           };
           return data;
         })
@@ -63,37 +69,60 @@ export const artOutCome = async (checkbill) => {
     });
 };
 
-export const ImageCheck = (memoname) => {
-  console.log(memoname, "memo");
-  switch (+memoname) {
-    case 1:
-      return onegc;
-    case 5:
-      return fivegc;
-    case 10:
-      return tengc;
-    case 20:
-      return twengc;
-    case 50:
-      return fivtygc;
-    case 100:
-      return hundredgc;
-    case 1000:
-      return thougc;
-    case 100000:
-      return hundredthougc;
-    case 1000000:
-      return miliongc;
-    default:
-      break;
+export const ImageCheck = (memoname, level) => {
+  if (level > 0) {
+    switch (+memoname) {
+      case 1:
+        return onegc;
+      case 5:
+        return fivegc;
+      case 10:
+        return tengc;
+      case 20:
+        return twengc;
+      case 50:
+        return fivtygc;
+      case 100:
+        return hundredgc;
+      case 1000:
+        return thougc;
+      case 100000:
+        return hundredthougc;
+      case 1000000:
+        return miliongc;
+      default:
+        break;
+    }
+  } else {
+    switch (+memoname) {
+      case 1:
+        return "https://i.ibb.co/Nnnfwmx/GC-Billy.png  ";
+      case 5:
+        return "https://i.ibb.co/PZwtbNd/GC-Fiyive.png";
+      case 10:
+        return "https://i.ibb.co/mDBZdwq/GC-Decker.png ";
+      case 20:
+        return "https://i.ibb.co/X7R1NmP/GC-Twinda.png";
+      case 50:
+        return "https://i.ibb.co/37Mq4Vd/GC-Fighty.png";
+      case 100:
+        return "https://i.ibb.co/Vqy7cwy/GC-Centaur.png";
+      case 1000:
+        return "https://i.ibb.co/Nt1KH8Z/GC-Sen-say.png";
+      case 100000:
+        return "https://i.ibb.co/3smBng5/GC-Gee-whiz.png";
+      case 1000000:
+        return "https://i.ibb.co/kMkwTpF/GC-milliam.png ";
+      default:
+        break;
+    }
   }
 };
-/* load 'fs' for readFile and writeFile support */
 
 export const layerGifOnImage = async (url) => {
   try {
     const res = await (await fetch(url)).json();
-    return res.jpgfile;
+    return res;
   } catch (error) {
     console.error(error);
   }
@@ -129,7 +158,7 @@ export const ScarcityLevel = (denomination, artOutcome) => {
     ],
   };
   const billThresholds = thresholds[+denomination2];
-  let scarcityLevel = 1;
+  let scarcityLevel = 0;
   for (let i = 1; i < billThresholds.length; i++) {
     if (billThresholds[i - 1] > +artOutcome > billThresholds[i]) {
       scarcityLevel = i;
