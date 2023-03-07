@@ -46,7 +46,7 @@ export const artOutCome = async (checkbill) => {
         .then(function (resp) {
           const hash = sha256(ledgerhash + resp.hash).toString();
           const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
-          console.log("level", "1 level");
+          console.log(resp);
           const data = {
             account: res.source_account,
             numbersOnly: numbersOnly,
