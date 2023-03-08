@@ -211,47 +211,6 @@ const Pay = () => {
     ]);
   };
 
-  const send = async () => {
-    if (nonprofit.length < 5) {
-      alert.error("Choose a nonprofit or Something repeats.");
-    } else {
-      setLoading(true);
-      const transaction = await mine();
-      let mineSequence = transaction.transactionSequence;
-      console.log(mineSequence, "mine result");
-      const tempdata = [];
-      for (const key in total) {
-        if (Object.hasOwnProperty.call(total, key)) {
-          const element = total[key];
-          for (let i = 0; i < element.value / element.name; i++) {
-            let faceValueText = element.name + " GC ";
-            const res = await mint(mineSequence, faceValueText);
-            const data = await artOutCome(res.transactionId);
-            tempdata.push(data);
-          }
-        }
-      }
-      let artOutComeNumber = [];
-      let artOutComeLevel = [];
-      tempdata.map((item) => {
-        artOutComeNumber.push(item.numbersOnly);
-        artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
-      });
-      setInfo(tempdata);
-      console.log(artOutComeNumber, "ArtSeedLength");
-      console.log(artOutComeLevel, "artOutComeLevel");
-      setLevel(artOutComeLevel);
-      handler();
-      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
-        console.log(
-          res,
-          "image url array... if app didn't find url, in modal it output question mark image with some info. "
-        );
-        setAllData(res[0].alldata);
-        setLoading(false);
-      });
-    }
-  };
   const handleClick = async () => {
     const data = await artOutCome(inputInfo.checkbill);
     navigate(Public_Special, {
@@ -264,8 +223,8 @@ const Pay = () => {
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = await server.fetchBaseFee();
-    console.log(fee, "Fee");
+    const fee = (await server.fetchBaseFee()) + 100;
+    console.log(fee);
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -325,7 +284,7 @@ const Pay = () => {
   const mint = async (mineSequence, faceValueText) => {
     console.log(mineSequence, "mineSequence");
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = await server.fetchBaseFee();
+    const fee = (await server.fetchBaseFee()) + 100;
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -391,7 +350,48 @@ const Pay = () => {
       console.log(e);
     }
   };
-
+  const send = async () => {
+    if (nonprofit.length < 5) {
+      alert.error("Choose a nonprofit or Something repeats.");
+    } else {
+      setLoading(true);
+      const transaction = await mine();
+      console.log(transaction);
+      let mineSequence = transaction?.transactionSequence;
+      console.log(mineSequence, "mine result");
+      const tempdata = [];
+      for (const key in total) {
+        if (Object.hasOwnProperty.call(total, key)) {
+          const element = total[key];
+          for (let i = 0; i < element.value / element.name; i++) {
+            let faceValueText = element.name + " GC ";
+            const res = await mint(mineSequence, faceValueText);
+            const data = await artOutCome(res.transactionId);
+            tempdata.push(data);
+          }
+        }
+      }
+      let artOutComeNumber = [];
+      let artOutComeLevel = [];
+      tempdata.map((item) => {
+        artOutComeNumber.push(item.numbersOnly);
+        artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
+      });
+      setInfo(tempdata);
+      console.log(artOutComeNumber, "ArtSeedLength");
+      console.log(artOutComeLevel, "artOutComeLevel");
+      setLevel(artOutComeLevel);
+      handler();
+      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
+        console.log(
+          res,
+          "image url array... if app didn't find url, in modal it output question mark image with some info. "
+        );
+        setAllData(res[0].alldata);
+        setLoading(false);
+      });
+    }
+  };
   return (
     <>
       <Wrapper>
