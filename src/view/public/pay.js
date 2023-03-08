@@ -284,7 +284,7 @@ const Pay = () => {
   const mint = async (mineSequence, faceValueText) => {
     console.log(mineSequence, "mineSequence");
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 100;
+    const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
