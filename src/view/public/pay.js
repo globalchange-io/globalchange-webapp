@@ -186,7 +186,7 @@ const Pay = () => {
   const getStellarPrice = async () => {
     try {
       const res = await axios.get(
-        "https://data.nasdaq.com/api/v3/datasets/RATEINF/CPI_USA.json?api_key=VMRa7XxgZUEpe-Ps8Eg7"
+        "https://data.nasdaq.com/api/v3/datasets/RATEINF/CPI_USA.json?api_key=wnCn-hUnqgqwpjzEa9bM"
       );
       setCurrentCPI(res.data.dataset.data[0][1]);
       const response = await axios.get(
@@ -223,7 +223,7 @@ const Pay = () => {
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 200;
+    const fee = (await server.fetchBaseFee());
     console.log(fee);
     const transaction = new TransactionBuilder(account, {
       fee,
@@ -264,7 +264,7 @@ const Pay = () => {
           amount: sendEachActual,
         })
       )
-      .setTimeout(30)
+      .setTimeout(180)
       .addMemo(Memo.text("GlobalChange " + totalGC))
       .build();
 
@@ -283,7 +283,7 @@ const Pay = () => {
   };
   const mint = async (mineSequence, faceValueText) => {
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 200;
+    const fee = (await server.fetchBaseFee()) + 300;
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -323,7 +323,7 @@ const Pay = () => {
           amount: "0.0000001",
         })
       )
-      .setTimeout(60)
+      .setTimeout(180)
       .addMemo(Memo.text(faceValueText + mineSequence))
       .build();
     transaction.sign(sourceKeypair);
@@ -638,39 +638,39 @@ const Pay = () => {
                 info.map((item, key) => (
                   <ImageContainer
                     key={key}
-                    memoname={item.memoname}
+                    memoname={item?.memoname}
                     level={level[key]}
                   >
                     {console.log(level[key], level)}
                     <ImageWrapper>
-                      <Row>{item.checkbill}</Row>
+                      <Row>{item?.checkbill}</Row>
                       <ImageGroup2>
                         <DefaultImage
                           src={
-                            alldata[key].jpgfile ??
-                            ImageCheck(item.memoname, level[key])
+                            alldata[key]?.jpgfile ??
+                            ImageCheck(item?.memoname, level[key])
                           }
                         />
                         <DetailWrapper>
                           <TokenEditor>
                             <Text>Title</Text>
-                            <Text>{allValues.title}</Text>
+                            <Text>{allValues?.title}</Text>
                           </TokenEditor>
                           <TokenEditor>
                             <Text>By</Text>
-                            <Text>{allValues.by}</Text>
+                            <Text>{allValues?.by}</Text>
                           </TokenEditor>
                           <TokenEditor>
                             <Text>Born</Text>
-                            <Text>{allValues.born}</Text>
+                            <Text>{allValues?.born}</Text>
                           </TokenEditor>
                           <TokenEditor>
                             <Text>For</Text>
-                            <Text>{allValues.forwhat}</Text>
+                            <Text>{allValues?.forwhat}</Text>
                           </TokenEditor>
                         </DetailWrapper>
                       </ImageGroup2>
-                      <>{item.numbersOnly}</>
+                      <>{item?.numbersOnly}</>
                     </ImageWrapper>
                   </ImageContainer>
                 ))
