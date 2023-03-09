@@ -223,7 +223,7 @@ const Pay = () => {
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee());
+    const fee = await server.fetchBaseFee();
     console.log(fee);
     const transaction = new TransactionBuilder(account, {
       fee,
@@ -283,7 +283,7 @@ const Pay = () => {
   };
   const mint = async (mineSequence, faceValueText) => {
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 300;
+    const fee = await server.fetchBaseFee();
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
