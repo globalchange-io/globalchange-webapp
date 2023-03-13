@@ -40,7 +40,6 @@ import {
   Card12,
   Card13,
   Card14,
-  Question,
 } from "../../config/images";
 import { Loading } from "@nextui-org/react";
 
@@ -132,6 +131,11 @@ const Pay = () => {
     secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
     newnonprofitname: "",
   });
+  const [sendinfo, setSendInfo] = useState({
+    secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
+    amount: "",
+    sendaddress: "",
+  });
   const [allValues, setAllValues] = useState({
     title: "miniin",
     by: "marcage",
@@ -146,6 +150,9 @@ const Pay = () => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
   };
 
+  const getSendInfo = (e) => {
+    setSendInfo({ ...sendinfo, [e.target.name]: e.target.value });
+  };
   const handler = () => setVisible(true);
 
   const closeHandler = () => {
@@ -391,6 +398,37 @@ const Pay = () => {
       });
     }
   };
+
+  const handleSend = async () => {
+    console.log(sendinfo);
+    const sourceKeys = Keypair.fromSecret(sendinfo.secretKey);
+
+    const account = await server.loadAccount(sourceKeys.publicKey());
+    const fee = await server.fetchBaseFee();
+
+    const transaction = new TransactionBuilder(account, {
+      fee: fee,
+      networkPassphrase: Networks.PUBLIC,
+    })
+      .addOperation(
+        Operation.payment({
+          destination: sendinfo.sendaddress,
+          asset: Asset.native(),
+          amount: sendinfo.amount,
+        })
+      )
+      .setTimeout(180)
+      .build();
+
+    transaction.sign(sourceKeys);
+
+    try {
+      const trans = await server.submitTransaction(transaction);
+      console.log("Transaction successful!", trans);
+    } catch (error) {
+      console.error("Transaction failed!", error);
+    }
+  };
   return (
     <>
       <Wrapper>
@@ -462,18 +500,18 @@ const Pay = () => {
         <Dashboard3>
           <Title>Send GC (pay someone) </Title>
           <>Recipient account or GC nickname</>
-          <ConnectInput />
+          <ConnectInput name="sendaddress" onChange={getSendInfo} />
           <>Amount to send</>
           <ConnectWrapper>
-            <ConnectInput />
+            <ConnectInput name="amount" onChange={getSendInfo} />
             <>GC</>
           </ConnectWrapper>
           <>
             Your Stellar Lumens account private key OR leave blank to connect
             wallet (Freighter)
           </>
-          <ConnectInput />
-          <Button>Send</Button>
+          <ConnectInput name="secretKey" onChange={getSendInfo} />
+          <Button onClick={handleSend}>Send</Button>
         </Dashboard3>
         <Dashboard2>
           <Title>Mine and Mint New GC for yourself</Title>
@@ -636,11 +674,7 @@ const Pay = () => {
               ) : (
                 info &&
                 info.map((item, key) => (
-                  <ImageContainer
-                    key={key}
-                    memoname={item?.memoname}
-                    level={level[key]}
-                  >
+                  <ImageContainer key={key} memoname={item?.memoname} level="1">
                     {console.log(level[key], level)}
                     <ImageWrapper>
                       <Row>{item?.checkbill}</Row>
