@@ -1,5 +1,4 @@
 import sha256 from "crypto-js/sha256";
-import axios from "axios";
 import { Server } from "stellar-sdk";
 import {
   onegc,

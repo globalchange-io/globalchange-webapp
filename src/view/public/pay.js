@@ -15,6 +15,7 @@ import {
   Operation,
   Asset,
   Memo,
+  BASE_FEE,
 } from "stellar-sdk";
 import axios from "axios";
 import { Buffer } from "buffer";
@@ -57,6 +58,7 @@ const Pay = () => {
   const [totalXLM, setTotalXML] = useState(0);
   const [sendEachActual, setSendEachActual] = useState(0);
   const [level, setLevel] = useState();
+
   const [nonprofitDetail, setNonprofitDetail] = useState([
     { name: "none", value: "none" },
     {
@@ -133,7 +135,7 @@ const Pay = () => {
   });
   const [sendinfo, setSendInfo] = useState({
     secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
-    amount: "",
+    memo: "",
     sendaddress: "",
   });
   const [allValues, setAllValues] = useState({
@@ -145,6 +147,7 @@ const Pay = () => {
   const [alldata, setAllData] = useState([]);
   const sourceKeypair = Keypair.fromSecret(inputInfo.secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
+  console.log(sourcePublicKey);
   const server = new Server("https://horizon.stellar.org");
   const getInfo = (e) => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
@@ -231,7 +234,6 @@ const Pay = () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
     const fee = await server.fetchBaseFee();
-    console.log(fee);
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -400,34 +402,38 @@ const Pay = () => {
   };
 
   const handleSend = async () => {
-    console.log(sendinfo);
-    const sourceKeys = Keypair.fromSecret(sendinfo.secretKey);
-
-    const account = await server.loadAccount(sourceKeys.publicKey());
+    const sourceKeypair = Keypair.fromSecret(sendinfo.secretKey);
+    const sourcePublicKey = sourceKeypair.publicKey();
+    const currentOwnerAddress = sourcePublicKey;
+    const newOwnerAddress = sendinfo.sendaddress;
+    const memo = sendinfo.memo;
+    const sequenceNumber = sendinfo.memo.split("GC")[1].trim();
     const fee = await server.fetchBaseFee();
-
-    const transaction = new TransactionBuilder(account, {
-      fee: fee,
-      networkPassphrase: Networks.PUBLIC,
-    })
-      .addOperation(
-        Operation.payment({
-          destination: sendinfo.sendaddress,
-          asset: Asset.native(),
-          amount: sendinfo.amount,
+    server
+      .loadAccount(currentOwnerAddress)
+      .then((account) => {
+        const transaction = new TransactionBuilder(account, {
+          fee: fee,
+          networkPassphrase: Networks.PUBLIC,
+          memo: Memo.text(memo),
+          // minAccountSequence: sequenceNumber,
         })
-      )
-      .setTimeout(180)
-      .build();
-
-    transaction.sign(sourceKeys);
-
-    try {
-      const trans = await server.submitTransaction(transaction);
-      console.log("Transaction successful!", trans);
-    } catch (error) {
-      console.error("Transaction failed!", error);
-    }
+          .addOperation(
+            Operation.setOptions({
+              signer: {
+                ed25519PublicKey: newOwnerAddress,
+                weight: 1,
+              },
+              masterWeight: 0,
+            })
+          )
+          .setTimeout(180)
+          .build();
+        transaction.sign(sourceKeypair);
+        return server.submitTransaction(transaction);
+      })
+      .then((result) => console.log(result, "result"))
+      .catch((error) => console.error(error));
   };
   return (
     <>
@@ -503,7 +509,7 @@ const Pay = () => {
           <ConnectInput name="sendaddress" onChange={getSendInfo} />
           <>Amount to send</>
           <ConnectWrapper>
-            <ConnectInput name="amount" onChange={getSendInfo} />
+            <ConnectInput name="memo" onChange={getSendInfo} />
             <>GC</>
           </ConnectWrapper>
           <>
