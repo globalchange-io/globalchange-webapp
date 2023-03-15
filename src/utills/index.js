@@ -69,7 +69,7 @@ export const artOutCome = async (checkbill) => {
 };
 
 export const ImageCheck = (memoname, level) => {
-  console.log(memoname, level);
+  console.log(memoname, level, ",e,p");
   if (level > 0) {
     switch (+memoname) {
       case 1:

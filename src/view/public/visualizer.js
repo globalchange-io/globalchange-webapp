@@ -59,14 +59,16 @@ const Visualizer = () => {
       "artOutComeNumber",
       artOutComeNumber
     );
-    ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
-      setArtList(res[0].artlistdata[0]);
-      setAllData(res[0].alldata[0]);
-      console.log(
-        res,
-        "image url array... if app didn't find url, in modal it output question mark image with some info. "
-      );
-    });
+    if (artOutComeLevel[0] !== 0) {
+      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
+        setArtList(res[0].artlistdata[0]);
+        setAllData(res[0].alldata[0]);
+        console.log(
+          res,
+          "image url array... if app didn't find url, in modal it output question mark image with some info. "
+        );
+      });
+    }
   };
 
   return (
@@ -109,46 +111,45 @@ const Visualizer = () => {
       <div> jpg: {alldata && alldata.jpgfile}</div>
       <div> artistname: {alldata && alldata.artistname}</div>
       text: {alldata && alldata.text}
-      {alldata && (
-        <ImageContainer
-          memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
-          level="1"
-        >
-          <ImageWrapper>
-            <Row>{allinfo?.bill}</Row>
-            <ImageGroup2>
-              <DefaultImage
-                src={
-                  alldata?.jpgfile ??
-                  ImageCheck(
-                    allinfo?.memoname.replace(/[a-z]/gi, ""),
-                    scarcitylevelvalue
-                  )
-                }
-              />
-              <DetailWrapper>
-                <TokenEditor>
-                  <Text>Title</Text>
-                  <Text>{allValues?.title}</Text>
-                </TokenEditor>
-                <TokenEditor>
-                  <Text>By</Text>
-                  <Text>{allValues?.by}</Text>
-                </TokenEditor>
-                <TokenEditor>
-                  <Text>Born</Text>
-                  <Text>{allValues?.born}</Text>
-                </TokenEditor>
-                <TokenEditor>
-                  <Text>For</Text>
-                  <Text>{allValues?.forwhat}</Text>
-                </TokenEditor>
-              </DetailWrapper>
-            </ImageGroup2>
-            <>{allinfo?.bill}</>
-          </ImageWrapper>
-        </ImageContainer>
-      )}
+      <ImageContainer
+        memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
+        level="1"
+      >
+        <ImageWrapper>
+          <Row>{allinfo?.bill}</Row>
+          <ImageGroup2>
+            <DefaultImage
+              src={
+                scarcitylevelvalue > 0
+                  ? alldata?.jpgfile
+                  : ImageCheck(
+                      allinfo?.memoname.replace(/[a-z]/gi, ""),
+                      scarcitylevelvalue
+                    )
+              }
+            />
+            <DetailWrapper>
+              <TokenEditor>
+                <Text>Title</Text>
+                <Text>{allValues?.title}</Text>
+              </TokenEditor>
+              <TokenEditor>
+                <Text>By</Text>
+                <Text>{allValues?.by}</Text>
+              </TokenEditor>
+              <TokenEditor>
+                <Text>Born</Text>
+                <Text>{allValues?.born}</Text>
+              </TokenEditor>
+              <TokenEditor>
+                <Text>For</Text>
+                <Text>{allValues?.forwhat}</Text>
+              </TokenEditor>
+            </DetailWrapper>
+          </ImageGroup2>
+          <>{allinfo?.bill}</>
+        </ImageWrapper>
+      </ImageContainer>
     </Wrapper>
   );
 };
