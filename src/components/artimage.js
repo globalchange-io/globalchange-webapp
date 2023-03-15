@@ -43,6 +43,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
 
   // Replace with the start time of the 1990s in Unix time
   const startOf1990s = 631152000;
+  // const startOf1990s = 731152000;
 
   // Replace with the end time of the 1990s in Unix time
   const endOf1990s = 946684799;

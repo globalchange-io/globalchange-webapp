@@ -16,6 +16,7 @@ import {
   Asset,
   Memo,
   BASE_FEE,
+  xdr,
 } from "stellar-sdk";
 import axios from "axios";
 import { Buffer } from "buffer";
@@ -58,7 +59,6 @@ const Pay = () => {
   const [totalXLM, setTotalXML] = useState(0);
   const [sendEachActual, setSendEachActual] = useState(0);
   const [level, setLevel] = useState();
-
   const [nonprofitDetail, setNonprofitDetail] = useState([
     { name: "none", value: "none" },
     {
@@ -415,8 +415,6 @@ const Pay = () => {
         const transaction = new TransactionBuilder(account, {
           fee: fee,
           networkPassphrase: Networks.PUBLIC,
-          memo: Memo.text(memo),
-          // minAccountSequence: sequenceNumber,
         })
           .addOperation(
             Operation.setOptions({
@@ -427,12 +425,16 @@ const Pay = () => {
               masterWeight: 0,
             })
           )
+          .addMemo(Memo.text(memo))
           .setTimeout(180)
           .build();
+        // transaction.sequence = new SequenceNumber(sequenceNumber);
+        // console.log(transaction);
         transaction.sign(sourceKeypair);
+        console.log(transaction);
         return server.submitTransaction(transaction);
       })
-      .then((result) => console.log(result, "result"))
+      .then((result) => console.log(result))
       .catch((error) => console.error(error));
   };
   return (
@@ -681,7 +683,6 @@ const Pay = () => {
                 info &&
                 info.map((item, key) => (
                   <ImageContainer key={key} memoname={item?.memoname} level="1">
-                    {console.log(level[key], level)}
                     <ImageWrapper>
                       <Row>{item?.checkbill}</Row>
                       <ImageGroup2>

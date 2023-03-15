@@ -20,7 +20,7 @@ const SendArt = () => {
     level: "",
     key: "",
   });
-  const [startDate, setStartDate] = useState(new Date("1990-01-01"));
+  const [startDate, setStartDate] = useState(new Date("1993-03-03"));
   const [hash, setHash] = useState();
   const sourceKeypair = Keypair.fromSecret(
     "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N"
