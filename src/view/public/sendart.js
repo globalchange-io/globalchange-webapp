@@ -23,7 +23,7 @@ const SendArt = () => {
   const [startDate, setStartDate] = useState(new Date("1993-03-03"));
   const [hash, setHash] = useState();
   const sourceKeypair = Keypair.fromSecret(
-    "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N"
+    "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG"
   );
   const sourcePublicKey = sourceKeypair.publicKey();
   const server = new Server("https://horizon.stellar.org");

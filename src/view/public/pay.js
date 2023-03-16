@@ -15,8 +15,6 @@ import {
   Operation,
   Asset,
   Memo,
-  BASE_FEE,
-  xdr,
 } from "stellar-sdk";
 import axios from "axios";
 import { Buffer } from "buffer";
@@ -130,11 +128,11 @@ const Pay = () => {
     accountKey: "",
     oldnonprofit: "",
     newnonprofit: "",
-    secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
+    secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     newnonprofitname: "",
   });
   const [sendinfo, setSendInfo] = useState({
-    secretKey: "SCRSSD2OXV5QVBJXRA7N5PXLKK76DMZJFAJC32HEVBPOGVFHMS5F2D4N",
+    secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     memo: "",
     sendaddress: "",
   });
@@ -233,7 +231,7 @@ const Pay = () => {
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 4900;
+    const fee = (await server.fetchBaseFee()) + 900;
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -273,13 +271,14 @@ const Pay = () => {
           amount: sendEachActual,
         })
       )
-      .setTimeout(240)
+      .setTimeout(180)
       .addMemo(Memo.text("GlobalChange " + totalGC))
       .build();
 
     transaction.sign(sourceKeypair);
 
     try {
+      console.log(transaction);
       const transactionResult = await server.submitTransaction(transaction);
       return {
         transactionId: transactionResult.id,
@@ -292,7 +291,7 @@ const Pay = () => {
   };
   const mint = async (mineSequence, faceValueText) => {
     const account = await server.loadAccount(sourcePublicKey);
-    const fee = (await server.fetchBaseFee()) + 4900;
+    const fee = (await server.fetchBaseFee()) + 900;
     const transaction = new TransactionBuilder(account, {
       fee,
       networkPassphrase: Networks.PUBLIC,
@@ -332,7 +331,7 @@ const Pay = () => {
           amount: "0.0000001",
         })
       )
-      .setTimeout(240)
+      .setTimeout(180)
       .addMemo(Memo.text(faceValueText + mineSequence))
       .build();
     transaction.sign(sourceKeypair);
@@ -402,40 +401,40 @@ const Pay = () => {
   };
 
   const handleSend = async () => {
-    const sourceKeypair = Keypair.fromSecret(sendinfo.secretKey);
-    const sourcePublicKey = sourceKeypair.publicKey();
-    const currentOwnerAddress = sourcePublicKey;
-    const newOwnerAddress = sendinfo.sendaddress;
-    const memo = sendinfo.memo;
-    const sequenceNumber = sendinfo.memo.split("GC")[1].trim();
-    const fee = await server.fetchBaseFee();
-    server
-      .loadAccount(currentOwnerAddress)
-      .then((account) => {
-        const transaction = new TransactionBuilder(account, {
-          fee: fee,
-          networkPassphrase: Networks.PUBLIC,
-        })
-          .addOperation(
-            Operation.setOptions({
-              signer: {
-                ed25519PublicKey: newOwnerAddress,
-                weight: 1,
-              },
-              masterWeight: 0,
-            })
-          )
-          .addMemo(Memo.text(memo))
-          .setTimeout(180)
-          .build();
-        // transaction.sequence = new SequenceNumber(sequenceNumber);
-        // console.log(transaction);
-        transaction.sign(sourceKeypair);
-        console.log(transaction);
-        return server.submitTransaction(transaction);
-      })
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+    // const sourceKeypair = Keypair.fromSecret(sendinfo.secretKey);
+    // const sourcePublicKey = sourceKeypair.publicKey();
+    // const currentOwnerAddress = sourcePublicKey;
+    // const newOwnerAddress = sendinfo.sendaddress;
+    // const memo = sendinfo.memo;
+    // const sequenceNumber = sendinfo.memo.split("GC")[1].trim();
+    // const fee = await server.fetchBaseFee();
+    // server
+    //   .loadAccount(currentOwnerAddress)
+    //   .then((account) => {
+    //     const transaction = new TransactionBuilder(account, {
+    //       fee: fee,
+    //       networkPassphrase: Networks.PUBLIC,
+    //     })
+    //       .addOperation(
+    //         Operation.setOptions({
+    //           signer: {
+    //             ed25519PublicKey: newOwnerAddress,
+    //             weight: 1,
+    //           },
+    //           masterWeight: 0,
+    //         })
+    //       )
+    //       .addMemo(Memo.text(memo))
+    //       .setTimeout(180)
+    //       .build();
+    //     // transaction.sequence = new SequenceNumber(sequenceNumber);
+    //     // console.log(transaction);
+    //     transaction.sign(sourceKeypair);
+    //     console.log(transaction);
+    //     return server.submitTransaction(transaction);
+    //   })
+    //   .then((result) => console.log(result))
+    //   .catch((error) => console.error(error));
   };
   return (
     <>
@@ -519,7 +518,7 @@ const Pay = () => {
             wallet (Freighter)
           </>
           <ConnectInput name="secretKey" onChange={getSendInfo} />
-          <Button onClick={handleSend}>Send</Button>
+          <Button>Send</Button>
         </Dashboard3>
         <Dashboard2>
           <Title>Mine and Mint New GC for yourself</Title>
