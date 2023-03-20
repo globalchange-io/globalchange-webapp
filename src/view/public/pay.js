@@ -230,13 +230,10 @@ const Pay = () => {
     });
   };
   const connectClick = async (e) => {
-    // const res = await getTransactions(inputInfo.accountKey);
-    // let array = [];
-    // const regex = new RegExp("/d+sGCsd+/g");
-    // res.map((items) => {
-    //   regex.test(items.memo) && array.push(items);
-    // });
-    // console.log(res, "sd");
+    const res = await getTransactions(inputInfo.accountKey);
+    const regex = /^[\d.]+ GC \d+$/;
+    const filterData = res.filter((items) => regex.test(items.memo) === true);
+    console.log(filterData, "sd");
   };
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
