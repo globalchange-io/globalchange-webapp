@@ -10,6 +10,11 @@ import {
   thougc,
   miliongc,
   hundredthougc,
+  Card10,
+  Card11,
+  Card12,
+  Card13,
+  Card14,
 } from "../config/images";
 
 export const arrayKill = (array, target, name) => {
@@ -29,6 +34,24 @@ export const checkURL = (URL) => {
   return regex.test(URL);
 };
 
+export const getTransactions = async (account) => {
+  let url = `https://horizon.stellar.org/accounts/${account}/transactions?order=desc&limit=200`;
+  let transactionsArray = [];
+  console.log(account);
+  while (true) {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(url);
+    transactionsArray = transactionsArray.concat(data._embedded.records);
+    if (!data._links.next || data._links.next.href === data._links.self.href) {
+      break;
+    }
+
+    url = data._links.next.href;
+  }
+  return transactionsArray;
+};
+
 export const artOutCome = async (checkbill) => {
   const server = new Server("https://horizon.stellar.org");
   return await server
@@ -45,7 +68,6 @@ export const artOutCome = async (checkbill) => {
         .then(function (resp) {
           const hash = sha256(ledgerhash + resp.hash).toString();
           const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
-          console.log(resp);
           const data = {
             account: res.source_account,
             numbersOnly: numbersOnly,
@@ -69,7 +91,6 @@ export const artOutCome = async (checkbill) => {
 };
 
 export const ImageCheck = (memoname, level) => {
-  console.log(memoname, level, ",e,p");
   if (level > 0) {
     switch (+memoname) {
       case 1:
@@ -95,8 +116,18 @@ export const ImageCheck = (memoname, level) => {
     }
   } else {
     switch (+memoname) {
+      case 0.01:
+        return Card10;
+      case 0.05:
+        return Card11;
+      case 0.1:
+        return Card12;
+      case 0.25:
+        return Card13;
+      case 0.5:
+        return Card14;
       case 1:
-        return "https://i.ibb.co/Nnnfwmx/GC-Billy.png  ";
+        return "https://i.ibb.co/Nnnfwmx/GC-Billy.png";
       case 5:
         return "https://i.ibb.co/PZwtbNd/GC-Fiyive.png";
       case 10:
@@ -159,10 +190,12 @@ export const ScarcityLevel = (denomination, artOutcome) => {
   };
   const billThresholds = thresholds[+denomination2];
   let scarcityLevel = 0;
-  for (let i = 1; i < billThresholds.length; i++) {
-    if (billThresholds[i - 1] > +artOutcome > billThresholds[i]) {
-      scarcityLevel = i;
-      break;
+  if (billThresholds) {
+    for (let i = 1; i < billThresholds.length; i++) {
+      if (billThresholds[i - 1] > +artOutcome > billThresholds[i]) {
+        scarcityLevel = i;
+        break;
+      }
     }
   }
 

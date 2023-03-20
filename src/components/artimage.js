@@ -1,5 +1,10 @@
 import StellarSdk from "stellar-sdk";
-import { checkURL, digits_count, layerGifOnImage } from "../utills";
+import {
+  checkURL,
+  digits_count,
+  getTransactions,
+  layerGifOnImage,
+} from "../utills";
 
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
@@ -48,82 +53,61 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
   // Replace with the end time of the 1990s in Unix time
   const endOf1990s = 946684799;
 
-  const getTransactions = async (account) => {
-    let url = `https://horizon.stellar.org/accounts/${account}/transactions?order=desc&limit=200`;
-    let transactionsArray = [];
-
-    while (true) {
-      const response = await fetch(url);
-      const data = await response.json();
-      transactionsArray = transactionsArray.concat(data._embedded.records);
-
-      if (
-        !data._links.next ||
-        data._links.next.href === data._links.self.href
-      ) {
-        break;
-      }
-
-      url = data._links.next.href;
-    }
-    return transactionsArray;
-  };
-
   try {
     let arr = [];
     let arr2 = [];
     let arr3 = [];
     for (let k = 0; k < artOutComeLevel.length; k++) {
-      for (let j = 0; j < accounts.length; j++) {
-        let tran = await getTransactions(accounts[j].address);
-        // // Do something with the transactions
-        for (let i = 0; i < tran.length; i++) {
-          if (
-            tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
-            tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
-          ) {
-            if (checkURL(tran[i].memo)) {
-              console.log(tran[i], "asdf");
-              if (+tran[i].ledger >= +recentLedgerNumber) {
-                await server
-                  .effects()
-                  .forTransaction(tran[i].hash)
-                  .limit("1")
-                  .call()
-                  // eslint-disable-next-line no-loop-func
-                  .then(function (resp) {
-                    if (
-                      resp?.records[0]?.amount * Math.pow(10, 7) ===
-                      checkreal
-                    ) {
-                      arr2.push(tran[i].memo);
-                    } else {
+      if (artOutComeLevel[k] !== 0) {
+        for (let j = 0; j < accounts.length; j++) {
+          let tran = await getTransactions(accounts[j].address);
+          // // Do something with the transactions
+          for (let i = 0; i < tran.length; i++) {
+            if (
+              tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
+              tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
+            ) {
+              if (checkURL(tran[i].memo)) {
+                console.log(tran[i], "asdf");
+                if (+tran[i].ledger >= +recentLedgerNumber) {
+                  await server
+                    .effects()
+                    .forTransaction(tran[i].hash)
+                    .limit("1")
+                    .call()
+                    // eslint-disable-next-line no-loop-func
+                    .then(function (resp) {
                       if (
-                        scarcityLevel2 >=
-                          resp.records[0].amount * Math.pow(10, 7) &&
-                        resp.records[0].amount * Math.pow(10, 7) >=
-                          scarcityLevel1
+                        resp?.records[0]?.amount * Math.pow(10, 7) ===
+                        checkreal
                       ) {
+                        arr2.push(tran[i].memo);
+                      } else {
                         if (
-                          resp.records[0].amount * Math.pow(10, 7) ===
-                          50 + artOutComeLevel[k]
+                          scarcityLevel2 >=
+                            resp.records[0].amount * Math.pow(10, 7) &&
+                          resp.records[0].amount * Math.pow(10, 7) >=
+                            scarcityLevel1
                         ) {
-                          memoTransactions.push(tran[i]);
+                          if (
+                            resp.records[0].amount * Math.pow(10, 7) ===
+                            50 + artOutComeLevel[k]
+                          ) {
+                            memoTransactions.push(tran[i]);
+                          }
                         }
                       }
-                    }
-                  })
-                  .catch(function (err) {
-                    console.error(err);
-                  });
+                    })
+                    .catch(function (err) {
+                      console.error(err);
+                    });
+                }
               }
             }
           }
         }
-      }
-      let trans = [];
-      console.log(memoTransactions, "arr", arr2);
-      if (memoTransactions.length > 0) {
+        let trans = [];
+        console.log(memoTransactions, "arr", arr2);
         for (let i = 0; i < memoTransactions.length; i++) {
           const object1 = memoTransactions[i];
           const isNameRepeated = arr2.some(
@@ -162,6 +146,9 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
             }
           })
         );
+      } else {
+        arr.push(0);
+        arr3.push([]);
       }
     }
     const data = [{ alldata: arr, artlistdata: arr3 }];

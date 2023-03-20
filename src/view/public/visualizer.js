@@ -70,7 +70,7 @@ const Visualizer = () => {
       });
     }
   };
-
+  console.log(alldata, "alldata");
   return (
     <Wrapper>
       <BillInput>

@@ -19,7 +19,13 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
+import {
+  arrayKill,
+  artOutCome,
+  getTransactions,
+  ImageCheck,
+  ScarcityLevel,
+} from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import ArtImage from "../../components/artimage";
@@ -125,7 +131,7 @@ const Pay = () => {
   const [loading, setLoading] = useState(true);
   const [inputInfo, setInputInfo] = useState({
     checkbill: "",
-    accountKey: "",
+    accountKey: "GDH3J2SBCKF6KN2IPXQYIZZFF3W4EEIWD57DEJQDQ4YXRT3JHW66HWXL",
     oldnonprofit: "",
     newnonprofit: "",
     secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
@@ -150,12 +156,10 @@ const Pay = () => {
   const getInfo = (e) => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
   };
-
   const getSendInfo = (e) => {
     setSendInfo({ ...sendinfo, [e.target.name]: e.target.value });
   };
   const handler = () => setVisible(true);
-
   const closeHandler = () => {
     setVisible(false);
   };
@@ -177,8 +181,6 @@ const Pay = () => {
     { name: 0.25, src: Card13 },
     { name: 0.5, src: Card14 },
   ];
-
-  let bills = [];
 
   useEffect(() => {
     getStellarPrice();
@@ -227,7 +229,15 @@ const Pay = () => {
       },
     });
   };
-
+  const connectClick = async (e) => {
+    // const res = await getTransactions(inputInfo.accountKey);
+    // let array = [];
+    // const regex = new RegExp("/d+sGCsd+/g");
+    // res.map((items) => {
+    //   regex.test(items.memo) && array.push(items);
+    // });
+    // console.log(res, "sd");
+  };
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
@@ -276,9 +286,8 @@ const Pay = () => {
       .build();
 
     transaction.sign(sourceKeypair);
-
+    console.log(transaction);
     try {
-      console.log(transaction);
       const transactionResult = await server.submitTransaction(transaction);
       return {
         transactionId: transactionResult.id,
@@ -339,19 +348,10 @@ const Pay = () => {
     try {
       const transactionResult = await server.submitTransaction(transaction);
       console.log(transactionResult, "transactionResult");
-      bills.push({
-        faceValueText: faceValueText,
-        serialNumber: transactionResult.id,
-        transactionLink: transactionResult._links.transaction.href,
-        ledger: transactionResult.ledger,
-      });
-
-      bills.forEach((item) => console.log(item, "bills"));
       return {
         transactionId: transactionResult.id,
         transactionSequence: transactionResult.source_account_sequence,
         transactionLink: transactionResult._links.transaction.href,
-        bills,
       };
     } catch (e) {
       console.log(e);
@@ -382,11 +382,11 @@ const Pay = () => {
       let artOutComeLevel = [];
       tempdata.map((item) => {
         artOutComeNumber.push(item.numbersOnly);
+        console.log(item.memoname);
         artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
       });
       setInfo(tempdata);
-      console.log(artOutComeNumber, "ArtSeedLength");
-      console.log(artOutComeLevel, "artOutComeLevel");
+
       setLevel(artOutComeLevel);
       handler();
       ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
@@ -400,42 +400,7 @@ const Pay = () => {
     }
   };
 
-  const handleSend = async () => {
-    // const sourceKeypair = Keypair.fromSecret(sendinfo.secretKey);
-    // const sourcePublicKey = sourceKeypair.publicKey();
-    // const currentOwnerAddress = sourcePublicKey;
-    // const newOwnerAddress = sendinfo.sendaddress;
-    // const memo = sendinfo.memo;
-    // const sequenceNumber = sendinfo.memo.split("GC")[1].trim();
-    // const fee = await server.fetchBaseFee();
-    // server
-    //   .loadAccount(currentOwnerAddress)
-    //   .then((account) => {
-    //     const transaction = new TransactionBuilder(account, {
-    //       fee: fee,
-    //       networkPassphrase: Networks.PUBLIC,
-    //     })
-    //       .addOperation(
-    //         Operation.setOptions({
-    //           signer: {
-    //             ed25519PublicKey: newOwnerAddress,
-    //             weight: 1,
-    //           },
-    //           masterWeight: 0,
-    //         })
-    //       )
-    //       .addMemo(Memo.text(memo))
-    //       .setTimeout(180)
-    //       .build();
-    //     // transaction.sequence = new SequenceNumber(sequenceNumber);
-    //     // console.log(transaction);
-    //     transaction.sign(sourceKeypair);
-    //     console.log(transaction);
-    //     return server.submitTransaction(transaction);
-    //   })
-    //   .then((result) => console.log(result))
-    //   .catch((error) => console.error(error));
-  };
+  const handleSend = async () => {};
   return (
     <>
       <Wrapper>
@@ -471,7 +436,7 @@ const Pay = () => {
               name="accountKey"
               value={inputInfo.accountKey}
             />
-            <Button onClick={handleClick}>Connect Account</Button>
+            <Button onClick={(e) => connectClick()}>Connect Account</Button>
           </CheckBill>
           <CardContainer>
             <Col>
