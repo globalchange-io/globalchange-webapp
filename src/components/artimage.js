@@ -63,10 +63,6 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
           let tran = await getTransactions(accounts[j].address);
           // // Do something with the transactions
           for (let i = 0; i < tran.length; i++) {
-            // if (
-            //   tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
-            //   tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
-            // ) {
             if (checkURL(tran[i].memo)) {
               if (+tran[i].ledger >= +recentLedgerNumber) {
                 await server
@@ -93,22 +89,29 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                       }
                     } else {
                       if (
-                        resp?.records[0]?.amount * Math.pow(10, 7) ===
-                        checkreal
+                        tran[i]?.preconditions?.timebounds?.min_time >=
+                          startOf1990s &&
+                        tran[i]?.preconditions?.timebounds?.min_time <=
+                          endOf1990s
                       ) {
-                        arr2.push(tran[i].memo);
-                      } else {
                         if (
-                          scarcityLevel2 >=
-                            resp.records[0].amount * Math.pow(10, 7) &&
-                          resp.records[0].amount * Math.pow(10, 7) >=
-                            scarcityLevel1
+                          resp?.records[0]?.amount * Math.pow(10, 7) ===
+                          checkreal
                         ) {
+                          arr2.push(tran[i].memo);
+                        } else {
                           if (
-                            resp.records[0].amount * Math.pow(10, 7) ===
-                            50 + artOutComeLevel[k]
+                            scarcityLevel2 >=
+                              resp.records[0].amount * Math.pow(10, 7) &&
+                            resp.records[0].amount * Math.pow(10, 7) >=
+                              scarcityLevel1
                           ) {
-                            memoTransactions.push(tran[i]);
+                            if (
+                              resp.records[0].amount * Math.pow(10, 7) ===
+                              50 + artOutComeLevel[k]
+                            ) {
+                              memoTransactions.push(tran[i]);
+                            }
                           }
                         }
                       }
@@ -119,7 +122,6 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                   });
               }
             }
-            // }
           }
         }
         let trans = [];
