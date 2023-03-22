@@ -59,8 +59,9 @@ const Visualizer = () => {
       "artOutComeNumber",
       artOutComeNumber
     );
+    let flag = 1;
     if (artOutComeLevel[0] !== 0) {
-      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
+      ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
         setArtList(res[0].artlistdata[0]);
         setAllData(res[0].alldata[0]);
         console.log(

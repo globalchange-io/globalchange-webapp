@@ -231,6 +231,7 @@ const Pay = () => {
   };
   const connectClick = async (e) => {
     const res = await getTransactions(inputInfo.accountKey);
+    console.log(res, "res");
     const regex = /^[\d.]+ GC \d+$/;
     const filterData = res.filter((items) => regex.test(items.memo) === true);
     console.log(filterData, "sd");
@@ -386,7 +387,8 @@ const Pay = () => {
 
       setLevel(artOutComeLevel);
       handler();
-      ArtImage(artOutComeNumber, artOutComeLevel).then((res) => {
+      let flag = 0;
+      ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
         console.log(
           res,
           "image url array... if app didn't find url, in modal it output question mark image with some info. "

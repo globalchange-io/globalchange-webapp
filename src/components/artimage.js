@@ -8,7 +8,7 @@ import {
 
 const server = new StellarSdk.Server("https://horizon.stellar.org");
 
-const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
+const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
   console.log(
     "in here I use mainnet account for test... GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK  --- GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA --- GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP --- GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI --- GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI"
   );
@@ -63,20 +63,35 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
           let tran = await getTransactions(accounts[j].address);
           // // Do something with the transactions
           for (let i = 0; i < tran.length; i++) {
-            if (
-              tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
-              tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
-            ) {
-              if (checkURL(tran[i].memo)) {
-                console.log(tran[i], "asdf");
-                if (+tran[i].ledger >= +recentLedgerNumber) {
-                  await server
-                    .effects()
-                    .forTransaction(tran[i].hash)
-                    .limit("1")
-                    .call()
-                    // eslint-disable-next-line no-loop-func
-                    .then(function (resp) {
+            // if (
+            //   tran[i]?.preconditions?.timebounds?.min_time >= startOf1990s &&
+            //   tran[i]?.preconditions?.timebounds?.min_time <= endOf1990s
+            // ) {
+            if (checkURL(tran[i].memo)) {
+              if (+tran[i].ledger >= +recentLedgerNumber) {
+                await server
+                  .effects()
+                  .forTransaction(tran[i].hash)
+                  .limit("1")
+                  .call()
+                  // eslint-disable-next-line no-loop-func
+                  .then(function (resp) {
+                    if (flag === 1) {
+                      if (
+                        scarcityLevel2 >=
+                          resp.records[0].amount * Math.pow(10, 7) &&
+                        resp.records[0].amount * Math.pow(10, 7) >=
+                          scarcityLevel1
+                      ) {
+                        if (
+                          resp.records[0].amount * Math.pow(10, 7) ===
+                          50 + artOutComeLevel[k]
+                        ) {
+                          memoTransactions.push(tran[i]);
+                          console.log(tran[i]);
+                        }
+                      }
+                    } else {
                       if (
                         resp?.records[0]?.amount * Math.pow(10, 7) ===
                         checkreal
@@ -97,17 +112,17 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
                           }
                         }
                       }
-                    })
-                    .catch(function (err) {
-                      console.error(err);
-                    });
-                }
+                    }
+                  })
+                  .catch(function (err) {
+                    console.error(err);
+                  });
               }
             }
+            // }
           }
         }
         let trans = [];
-        console.log(memoTransactions, "arr", arr2);
         for (let i = 0; i < memoTransactions.length; i++) {
           const object1 = memoTransactions[i];
           const isNameRepeated = arr2.some(
@@ -119,7 +134,6 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel) => {
             trans.push(object1);
           }
         }
-
         const sortedTransactions = trans.sort(
           (a, b) => a.paging_token - b.paging_token
         );

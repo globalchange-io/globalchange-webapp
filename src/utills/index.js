@@ -37,7 +37,6 @@ export const checkURL = (URL) => {
 export const getTransactions = async (account) => {
   let url = `https://horizon.stellar.org/accounts/${account}/transactions?order=desc&limit=200`;
   let transactionsArray = [];
-  console.log(account);
   while (true) {
     const response = await fetch(url);
     const data = await response.json();
