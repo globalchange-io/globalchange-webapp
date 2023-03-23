@@ -233,7 +233,12 @@ const Pay = () => {
     const res = await getTransactions(inputInfo.accountKey);
     console.log(res, "res");
     const regex = /^[\d.]+ GC \d+$/;
-    const filterData = res.filter((items) => regex.test(items.memo) === true);
+    const regex2 = /^[\d.]+GC \d+$/;
+
+    const filterData = res.filter(
+      (items) =>
+        regex.test(items.memo) === true || regex2.test(items.memo) === true
+    );
     console.log(filterData, "sd");
   };
   const mine = async () => {

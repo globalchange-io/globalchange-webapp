@@ -41,7 +41,6 @@ export const getTransactions = async (account) => {
   while (true) {
     const response = await fetch(url);
     const data = await response.json();
-    console.log(url);
     transactionsArray = transactionsArray.concat(data._embedded.records);
     if (!data._links.next || data._links.next.href === data._links.self.href) {
       break;
