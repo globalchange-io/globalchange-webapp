@@ -65,12 +65,12 @@ export const artOutCome = async (checkbill) => {
         .ledger(ledgerhash)
         .call()
         .then(function (resp) {
-          console.log(resp, res, "Sd");
           const hash = sha256(ledgerhash + resp.hash).toString();
-          const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
+          const numbersOnly = "0." + hash.replace(/[a-z]/gi, "");
+          let formattedNum = numbersOnly.replace(/0$/, "");
           const data = {
             account: res.source_account,
-            numbersOnly: numbersOnly,
+            numbersOnly: formattedNum,
             checkbill: checkbill,
             memoname: memoname[0],
             allmemo: res.memo,

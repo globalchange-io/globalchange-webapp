@@ -155,7 +155,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
           sortedTransactions.map(async (items, key) => {
             if (key === +artcycle % sortedTransactions.length) {
               console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-              console.log(items.memo);
+              console.log(items.memo, "items.memo");
               if (flag === 1) {
                 arr.push({ url: items.memo });
               } else {
