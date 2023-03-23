@@ -284,7 +284,6 @@ const Pay = () => {
       .build();
 
     transaction.sign(sourceKeypair);
-    console.log(transaction);
     try {
       const transactionResult = await server.submitTransaction(transaction);
       return {

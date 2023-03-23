@@ -16,6 +16,7 @@ import {
   Card13,
   Card14,
 } from "../config/images";
+const server = new Server("https://horizon.stellar.org");
 
 export const arrayKill = (array, target, name) => {
   const itemToRemoveIndex = array.findIndex((item) => {
@@ -52,7 +53,6 @@ export const getTransactions = async (account) => {
 };
 
 export const artOutCome = async (checkbill) => {
-  const server = new Server("https://horizon.stellar.org");
   return await server
     .transactions()
     .transaction(checkbill)
@@ -65,6 +65,7 @@ export const artOutCome = async (checkbill) => {
         .ledger(ledgerhash)
         .call()
         .then(function (resp) {
+          console.log(resp, res, "Sd");
           const hash = sha256(ledgerhash + resp.hash).toString();
           const numbersOnly = "." + hash.replace(/[a-z]/gi, "");
           const data = {
@@ -73,7 +74,7 @@ export const artOutCome = async (checkbill) => {
             checkbill: checkbill,
             memoname: memoname[0],
             allmemo: res.memo,
-            sequence: res.source_account_sequence,
+            created_at: res.created_at,
             redger: ledgerhash,
             redgerhash: resp.hash,
             billartseed: hash,
@@ -88,8 +89,22 @@ export const artOutCome = async (checkbill) => {
       console.error(err);
     });
 };
-
+export const getOperation = (transactionHash) => {
+  server
+    .operations()
+    .forTransaction(transactionHash)
+    .call()
+    .then((response) => {
+      // Process the response to get the operation address
+      const operationAddress = response.records[0].to;
+      console.log(`Operation address: ${operationAddress}`);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 export const ImageCheck = (memoname, level) => {
+  console.log(memoname, level, "sdf");
   if (level > 0) {
     switch (+memoname) {
       case 1:

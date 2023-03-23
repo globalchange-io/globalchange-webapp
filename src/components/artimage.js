@@ -156,9 +156,13 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
             if (key === +artcycle % sortedTransactions.length) {
               console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
               console.log(items.memo);
-              await layerGifOnImage(items.memo).then((res) => {
-                arr.push(res);
-              });
+              if (flag === 1) {
+                arr.push({ url: items.memo });
+              } else {
+                await layerGifOnImage(items.memo).then((res) => {
+                  arr.push(res);
+                });
+              }
             }
           })
         );
