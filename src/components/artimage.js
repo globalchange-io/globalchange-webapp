@@ -16,7 +16,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
 
   // Replace with your own horizon server URL
   // Replace with the recent ledger number that the user entered
-  const recentLedgerNumber = "40861697";
+  const recentLedgerNumber = "40861299";
   let memoTransactions = [];
   const accounts = [
     {
@@ -32,11 +32,11 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
       label: "nonprofit3",
     },
     {
-      address: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA",
+      address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
       label: "nonprofit4",
     },
     {
-      address: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
+      address: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI",
       label: "nonprofit5",
     },
   ];
@@ -88,6 +88,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                             50 + artOutComeLevel[k]
                           ) {
                             memoTransactions.push(tran[i]);
+                            console.log(tran[i]);
                           }
                         }
                       }
