@@ -284,7 +284,7 @@ const Pay = () => {
           amount: sendEachActual,
         })
       )
-      .setTimeout(180)
+      .setTimeout(240)
       .addMemo(Memo.text("GlobalChange " + totalGC))
       .build();
 
@@ -369,37 +369,39 @@ const Pay = () => {
       let mineSequence = transaction?.transactionSequence;
       console.log(mineSequence, "mine result");
       const tempdata = [];
-      for (const key in total) {
-        if (Object.hasOwnProperty.call(total, key)) {
-          const element = total[key];
-          for (let i = 0; i < element.value / element.name; i++) {
-            let faceValueText = element.name + " GC ";
-            const res = await mint(mineSequence, faceValueText);
-            const data = await artOutCome(res.transactionId);
-            tempdata.push(data);
+      if (mineSequence) {
+        for (const key in total) {
+          if (Object.hasOwnProperty.call(total, key)) {
+            const element = total[key];
+            for (let i = 0; i < element.value / element.name; i++) {
+              let faceValueText = element.name + " GC ";
+              const res = await mint(mineSequence, faceValueText);
+              const data = await artOutCome(res.transactionId);
+              tempdata.push(data);
+            }
           }
         }
-      }
-      let artOutComeNumber = [];
-      let artOutComeLevel = [];
-      tempdata.map((item) => {
-        artOutComeNumber.push(item.numbersOnly);
-        console.log(item.memoname);
-        artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
-      });
-      setInfo(tempdata);
+        let artOutComeNumber = [];
+        let artOutComeLevel = [];
+        tempdata.map((item) => {
+          artOutComeNumber.push(item.numbersOnly);
+          console.log(item.memoname);
+          artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
+        });
+        setInfo(tempdata);
 
-      setLevel(artOutComeLevel);
-      handler();
-      let flag = 0;
-      ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
-        console.log(
-          res,
-          "image url array... if app didn't find url, in modal it output question mark image with some info. "
-        );
-        setAllData(res[0].alldata);
-        setLoading(false);
-      });
+        setLevel(artOutComeLevel);
+        handler();
+        let flag = 0;
+        ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
+          console.log(
+            res,
+            "image url array... if app didn't find url, in modal it output question mark image with some info. "
+          );
+          setAllData(res[0].alldata);
+          setLoading(false);
+        });
+      }
     }
   };
 

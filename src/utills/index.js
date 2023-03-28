@@ -16,6 +16,7 @@ import {
   Card13,
   Card14,
 } from "../config/images";
+import { read, utils } from "xlsx";
 const server = new Server("https://horizon.stellar.org");
 
 export const arrayKill = (array, target, name) => {
@@ -57,8 +58,10 @@ export const artOutCome = async (checkbill) => {
     .transaction(checkbill)
     .call()
     .then(async (res) => {
+      let flag = 0;
       const ledgerhash = res.ledger_attr;
       const memoname = res.memo.split(" ", 3);
+
       return await server
         .ledgers()
         .ledger(ledgerhash)
@@ -66,10 +69,14 @@ export const artOutCome = async (checkbill) => {
         .then(function (resp) {
           const hash = sha256(ledgerhash + resp.hash).toString();
           const numbersOnly = "0." + hash.replace(/[a-z]/gi, "");
-          let formattedNum = numbersOnly.replace(/0$/, "");
+          // let formattedNum = numbersOnly.replace(/0$/, "");
+          console.log(res, "resp");
+          if (new Date(res.created_at).getFullYear() < 2023) {
+            flag = 1;
+          }
           const data = {
             account: res.source_account,
-            numbersOnly: formattedNum,
+            numbersOnly: numbersOnly,
             checkbill: checkbill,
             memoname: memoname[0],
             allmemo: res.memo,
@@ -77,6 +84,8 @@ export const artOutCome = async (checkbill) => {
             redger: ledgerhash,
             redgerhash: resp.hash,
             billartseed: hash,
+            sequence: res.source_account_sequence,
+            flag: flag,
           };
           return data;
         })
@@ -165,8 +174,35 @@ export const ImageCheck = (memoname, level) => {
 
 export const layerGifOnImage = async (url) => {
   try {
-    const res = await (await fetch(url)).json();
-    return res;
+    const res = await fetch(url);
+    const contentType = res.headers.get("Content-Type");
+    if (contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      const f = await res.arrayBuffer();
+      const workbook = read(f);
+      const data = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+      console.log(data);
+      const artlist = data.filter(
+        (item) =>
+          item["GlobalChange.io"] === "Link to Art" ||
+          item["GlobalChange.io"] === "Link to Art or paste image here"
+      )[0];
+      const createdBy = data.filter(
+        (item) => item["GlobalChange.io"] === "Created by"
+      )[0];
+      const title = data.filter(
+        (item) => item["GlobalChange.io"] === "Art title"
+      )[0];
+      console.log(artlist, "url data", url, "url by level");
+      const artData = {
+        jpgfile: artlist["Instructions for Creators"],
+        title: title["Instructions for Creators"],
+        artistname: createdBy["Instructions for Creators"],
+      };
+      console.log(artData);
+      return artData;
+    }
   } catch (error) {
     console.error(error);
   }
@@ -177,7 +213,7 @@ export const ScarcityLevel = (denomination, artOutcome) => {
 
   const thresholds = {
     1: [
-      0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001,
+      0.99, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001,
       0.000000001, 0.0000000001, 0.00000000001, 0.000000000000001,
     ],
     2: [

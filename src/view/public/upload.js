@@ -19,7 +19,7 @@ const UploadIndex = () => {
   };
   const handleClick = (e) => {
     const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-
+    console.log(allinfo, "ASd");
     axios
       .post(url, allinfo, {
         headers: {
@@ -49,8 +49,15 @@ const UploadIndex = () => {
         label="Enter Name of Artist"
         fullWidth
         name="artistname"
+        onChange={handleChange}
       />
-      <Input clearable label="Enter Title of Art" fullWidth name="title" />
+      <Input
+        clearable
+        label="Enter Title of Art"
+        fullWidth
+        name="title"
+        onChange={handleChange}
+      />
       <Input
         clearable
         label="Ente URL of image to appear on bill (e.g. small .jpg, .gif, moving gif)"

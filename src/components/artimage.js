@@ -48,7 +48,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
 
   // Replace with the start time of the 1990s in Unix time
   const startOf1990s = 631152000;
-  // const startOf1990s = 731152000;
+  // const startOf1990s2 = 731170799;
 
   // Replace with the end time of the 1990s in Unix time
   const endOf1990s = 946684799;
@@ -61,7 +61,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
       if (artOutComeLevel[k] !== 0) {
         for (let j = 0; j < accounts.length; j++) {
           let tran = await getTransactions(accounts[j].address);
-          // // Do something with the transactions
+          // Do something with the transactions
           for (let i = 0; i < tran.length; i++) {
             if (checkURL(tran[i].memo)) {
               if (+tran[i].ledger >= +recentLedgerNumber) {
@@ -74,17 +74,21 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                   .then(function (resp) {
                     if (flag === 1) {
                       if (
-                        scarcityLevel2 >=
-                          resp.records[0].amount * Math.pow(10, 7) &&
-                        resp.records[0].amount * Math.pow(10, 7) >=
-                          scarcityLevel1
+                        tran[i]?.preconditions?.timebounds?.min_time <
+                        startOf1990s
                       ) {
                         if (
-                          resp.records[0].amount * Math.pow(10, 7) ===
-                          50 + artOutComeLevel[k]
+                          scarcityLevel2 >=
+                            resp.records[0].amount * Math.pow(10, 7) &&
+                          resp.records[0].amount * Math.pow(10, 7) >=
+                            scarcityLevel1
                         ) {
-                          memoTransactions.push(tran[i]);
-                          console.log(tran[i]);
+                          if (
+                            resp.records[0].amount * Math.pow(10, 7) ===
+                            50 + artOutComeLevel[k]
+                          ) {
+                            memoTransactions.push(tran[i]);
+                          }
                         }
                       }
                     } else {
@@ -153,16 +157,11 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
         );
         await Promise.all(
           sortedTransactions.map(async (items, key) => {
-            if (key === +artcycle % sortedTransactions.length) {
+            if (key + 1 === +artcycle % sortedTransactions.length) {
               console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-              console.log(items.memo, "items.memo");
-              if (flag === 1) {
-                arr.push({ url: items.memo });
-              } else {
-                await layerGifOnImage(items.memo).then((res) => {
-                  arr.push(res);
-                });
-              }
+              await layerGifOnImage(items.memo).then((res) => {
+                arr.push(res);
+              });
             }
           })
         );

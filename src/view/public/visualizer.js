@@ -7,6 +7,7 @@ import {
   artOutCome,
   getOperation,
   ImageCheck,
+  layerGifOnImage,
   ScarcityLevel,
 } from "../../utills";
 import ArtImage from "../../components/artimage";
@@ -58,9 +59,8 @@ const Visualizer = () => {
       "artOutComeNumber",
       artOutComeNumber
     );
-    let flag = 1;
     if (artOutComeLevel[0] !== 0) {
-      ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
+      ArtImage(artOutComeNumber, artOutComeLevel, res.flag).then((res) => {
         setArtList(res[0].artlistdata[0]);
         setAllData(res[0].alldata[0]);
         console.log(
@@ -81,6 +81,19 @@ const Visualizer = () => {
         />
         <Button onClick={handleClick}>See Bill</Button>
       </BillInput>
+      <div>
+        Bill's Serial Number (new) :
+        6b1bc7715a56d6b1b57c69613a85246f37daf3ed58a245d3634c3472087b0fe0
+      </div>
+      <div>Account that minted bill : {allinfo?.account}</div>
+      <div>Bill's memo : {allinfo?.allmemo}</div>
+      <div>Bill's denomination : {allinfo?.memoname}</div>
+      <div>Bill's sequence number: {allinfo?.sequence}</div>
+      <div>Bill's ledger #: {allinfo?.redger}</div>
+      <div>Bill's ledger's hash: {allinfo?.redgerhash}</div>
+      <div>Bill's ArtSeed: {allinfo?.billartseed}</div>
+      <div>ArtOutcome: {allinfo?.numbersOnly}</div>
+      <div>Bill's Scarcity Level: {scarcitylevelvalue}</div>
       {scarcitylevelvalue === 0 ? (
         <>
           Background Image :
@@ -114,7 +127,7 @@ const Visualizer = () => {
           </div>
           <div>Date :{allinfo?.created_at}</div>
           <div>Serial Number : {bill}</div>
-          <div>Image :{alldata?.url ? alldata?.url : alldata?.jpgfile}</div>
+          <div>Image :{alldata?.jpgfile}</div>
           <div>Artist Name: {alldata?.artistname}</div>
           <div>Title of Art (from JSON) : {alldata?.title}</div>
         </>
@@ -124,6 +137,29 @@ const Visualizer = () => {
         {artList &&
           artList.map((item, key) => <div key={key}>{item.memo}</div>)}
       </>
+      {console.log(allinfo, "s")}
+      <ImageContainer
+        memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
+        level="1"
+      >
+        <ImageWrapper>
+          <Row>{allinfo?.bill}</Row>
+          <ImageGroup2>
+            <DefaultImage src={alldata?.jpgfile} />
+            <DetailWrapper>
+              <TokenEditor>
+                <Text>Title</Text>
+                <Text>{alldata?.title}</Text>
+              </TokenEditor>
+              <TokenEditor>
+                <Text>By</Text>
+                <Text>{alldata?.artistname}</Text>
+              </TokenEditor>
+            </DetailWrapper>
+          </ImageGroup2>
+          <>{alldata?.bill}</>
+        </ImageWrapper>
+      </ImageContainer>
     </Wrapper>
   );
 };
@@ -140,5 +176,45 @@ const BillInput = styled(Row)`
   gap: 10px;
   width: 100%;
   align-items: flex-end;
+`;
+const ImageContainer = styled(Row)`
+  background-image: ${(props) =>
+    `url(${ImageCheck(props.memoname, props.level)})`};
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 400px;
+  width: 100%;
+  overflow-y: auto;
+`;
+const ImageWrapper = styled(Column)`
+  font-size: 12px;
+  color: #ffffff;
+  justify-content: space-around;
+  width: 100%;
+`;
+const DetailWrapper = styled(Column)`
+  gap: 5px;
+  align-items: flex-start;
+  max-width: 100px;
+  width: 100%;
+`;
+const TokenEditor = styled(Row)`
+  gap: 10px;
+  div {
+    font-size: 14px;
+  }
+`;
+const ImageGroup2 = styled(Row)`
+  gap: 100px;
+  img {
+    width: 150px;
+    padding-left: 220px;
+  }
+`;
+const Text = styled(Row)`
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 24px;
 `;
 export default Visualizer;
