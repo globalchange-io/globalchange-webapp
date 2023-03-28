@@ -137,7 +137,6 @@ const Visualizer = () => {
         {artList &&
           artList.map((item, key) => <div key={key}>{item.memo}</div>)}
       </>
-      {console.log(allinfo, "s")}
       <ImageContainer
         memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
         level="1"
@@ -145,14 +144,19 @@ const Visualizer = () => {
         <ImageWrapper>
           <Row>{bill}</Row>
           <ImageGroup2>
-            <DefaultImage src={alldata?.jpgfile} />
+            <DefaultImage
+              src={
+                alldata?.jpgfile ??
+                ImageCheck(allinfo?.memoname, scarcitylevelvalue)
+              }
+            />
             <DetailWrapper>
               <TokenEditor>For Living Independence</TokenEditor>
             </DetailWrapper>
           </ImageGroup2>
           <Column>
-            {alldata?.bill}
-            {alldata?.artistname}
+            <Text>{alldata?.title ?? "Art Starts"}</Text>
+            <Text> {alldata?.artistname ?? "Rian Firdaus"}</Text>
           </Column>
         </ImageWrapper>
       </ImageContainer>
@@ -188,6 +192,7 @@ const ImageWrapper = styled(Column)`
   color: #ffffff;
   justify-content: space-around;
   width: 100%;
+  height: 100%;
 `;
 const DetailWrapper = styled(Column)`
   gap: 5px;
@@ -202,11 +207,15 @@ const TokenEditor = styled(Row)`
   left: 20px;
 `;
 const ImageGroup2 = styled(Row)`
-  gap: 100px;
+  gap: 60px;
   img {
     width: 150px;
-    padding-left: 220px;
+    padding-left: 170px;
   }
 `;
 
+const Text = styled(Row)`
+  font-size: 8px;
+  color: white;
+`;
 export default Visualizer;

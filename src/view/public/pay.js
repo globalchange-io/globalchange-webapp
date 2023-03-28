@@ -363,7 +363,6 @@ const Pay = () => {
     if (nonprofit.length < 5) {
       alert.error("Choose a nonprofit or Something repeats.");
     } else {
-      setLoading(true);
       const transaction = await mine();
       console.log(transaction);
       let mineSequence = transaction?.transactionSequence;
@@ -399,7 +398,6 @@ const Pay = () => {
             "image url array... if app didn't find url, in modal it output question mark image with some info. "
           );
           setAllData(res[0].alldata);
-          setLoading(false);
         });
       }
     }
@@ -646,10 +644,7 @@ const Pay = () => {
           ></Modal.Header>
           <Modal.Body>
             <Col>
-              {loading ? (
-                <Loading />
-              ) : (
-                info &&
+              {info &&
                 info.map((item, key) => (
                   <ImageContainer key={key} memoname={item?.memoname} level="1">
                     <ImageWrapper>
@@ -683,8 +678,7 @@ const Pay = () => {
                       <>{item?.numbersOnly}</>
                     </ImageWrapper>
                   </ImageContainer>
-                ))
-              )}
+                ))}
             </Col>
           </Modal.Body>
         </Modal>
