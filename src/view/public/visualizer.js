@@ -143,21 +143,17 @@ const Visualizer = () => {
         level="1"
       >
         <ImageWrapper>
-          <Row>{allinfo?.bill}</Row>
+          <Row>{bill}</Row>
           <ImageGroup2>
             <DefaultImage src={alldata?.jpgfile} />
             <DetailWrapper>
-              <TokenEditor>
-                <Text>Title</Text>
-                <Text>{alldata?.title}</Text>
-              </TokenEditor>
-              <TokenEditor>
-                <Text>By</Text>
-                <Text>{alldata?.artistname}</Text>
-              </TokenEditor>
+              <TokenEditor>For Living Independence</TokenEditor>
             </DetailWrapper>
           </ImageGroup2>
-          <>{alldata?.bill}</>
+          <Column>
+            {alldata?.bill}
+            {alldata?.artistname}
+          </Column>
         </ImageWrapper>
       </ImageContainer>
     </Wrapper>
@@ -201,9 +197,9 @@ const DetailWrapper = styled(Column)`
 `;
 const TokenEditor = styled(Row)`
   gap: 10px;
-  div {
-    font-size: 14px;
-  }
+  font-size: 20px;
+  color: #ffffff;
+  left: 20px;
 `;
 const ImageGroup2 = styled(Row)`
   gap: 100px;
@@ -212,9 +208,5 @@ const ImageGroup2 = styled(Row)`
     padding-left: 220px;
   }
 `;
-const Text = styled(Row)`
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 24px;
-`;
+
 export default Visualizer;
