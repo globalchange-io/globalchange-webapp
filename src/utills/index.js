@@ -67,7 +67,14 @@ export const artOutCome = async (checkbill) => {
         .ledger(ledgerhash)
         .call()
         .then(function (resp) {
-          const hash = sha256(ledgerhash + resp.hash).toString();
+          const hash = sha256(
+            res.source_account_sequence + resp.hash
+          ).toString();
+          console.log(
+            hash,
+            "ledgerhash + resp.hash)",
+            res.source_account_sequence + resp.hash
+          );
           const numbersOnly = "0." + hash.replace(/[a-z]/gi, "");
           // let formattedNum = numbersOnly.replace(/0$/, "");
           console.log(res, "resp");
