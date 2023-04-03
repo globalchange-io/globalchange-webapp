@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Column, DefaultImage, Row } from "../../components/element";
-import { Modal } from "@nextui-org/react";
+import { Loading, Modal } from "@nextui-org/react";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
 import Mygc from "../../components/mygc";
@@ -19,36 +19,14 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
-import {
-  arrayKill,
-  artOutCome,
-  getTransactions,
-  ImageCheck,
-  ScarcityLevel,
-} from "../../utills";
+import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
 import { useNavigate } from "react-router-dom";
 import { Public_Special } from "../../config";
 import ArtImage from "../../components/artimage";
 import { useAlert } from "react-alert";
 import Analog from "../../components/analog";
-import {
-  Card1,
-  Card2,
-  Card3,
-  Card4,
-  Card5,
-  Card6,
-  Card7,
-  Card8,
-  Card9,
-  Card10,
-  Card11,
-  Card12,
-  Card13,
-  Card14,
-} from "../../config/images";
-import { Loading } from "@nextui-org/react";
-
+import { Card1, Card2 } from "../../config/images";
+import { CoinData } from "../../components/data/coindata";
 window.Buffer = Buffer;
 
 const Pay = () => {
@@ -137,50 +115,25 @@ const Pay = () => {
     secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     newnonprofitname: "",
   });
-  const [sendinfo, setSendInfo] = useState({
-    secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
-    memo: "",
-    sendaddress: "",
-  });
-  const [allValues, setAllValues] = useState({
-    title: "miniin",
-    by: "marcage",
-    born: "2022.12.16",
-    forwhat: "nonprofit",
-  });
+  // const [sendinfo, setSendInfo] = useState({
+  //   secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
+  //   memo: "",
+  //   sendaddress: "",
+  // });
   const [alldata, setAllData] = useState([]);
   const sourceKeypair = Keypair.fromSecret(inputInfo.secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
-  console.log(sourcePublicKey);
   const server = new Server("https://horizon.stellar.org");
   const getInfo = (e) => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
   };
-  const getSendInfo = (e) => {
-    setSendInfo({ ...sendinfo, [e.target.name]: e.target.value });
-  };
+  // const getSendInfo = (e) => {
+  //   setSendInfo({ ...sendinfo, [e.target.name]: e.target.value });
+  // };
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
   };
-
-  const card = [
-    { name: 1, src: Card1 },
-    { name: 5, src: Card2 },
-    { name: 10, src: Card3 },
-    { name: 20, src: Card4 },
-    { name: 50, src: Card5 },
-    { name: 100, src: Card6 },
-    { name: 1000, src: Card7 },
-    { name: "100k", src: Card7, value: 100000 },
-    { name: "1M", src: Card8, value: 1000000 },
-    { name: "1B", src: Card9, value: 1000000000 },
-    { name: 0.01, src: Card10 },
-    { name: 0.05, src: Card11 },
-    { name: 0.1, src: Card12 },
-    { name: 0.25, src: Card13 },
-    { name: 0.5, src: Card14 },
-  ];
 
   useEffect(() => {
     getStellarPrice();
@@ -229,18 +182,17 @@ const Pay = () => {
       },
     });
   };
-  const connectClick = async (e) => {
-    const res = await getTransactions(inputInfo.accountKey);
-    console.log(res, "res");
-    const regex = /^[\d.]+ GC \d+$/;
-    const regex2 = /^[\d.]+GC \d+$/;
+  // const connectClick = async (e) => {
+  //   const res = await getTransactions(inputInfo.accountKey);
+  //   const regex = /^[\d.]+ GC \d+$/;
+  //   const regex2 = /^[\d.]+GC \d+$/;
 
-    const filterData = res.filter(
-      (items) =>
-        regex.test(items.memo) === true || regex2.test(items.memo) === true
-    );
-    console.log(filterData, "sd");
-  };
+  //   const filterData = res.filter(
+  //     (items) =>
+  //       regex.test(items.memo) === true || regex2.test(items.memo) === true
+  //   );
+  //   console.log(filterData, "sd");
+  // };
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
@@ -349,7 +301,6 @@ const Pay = () => {
 
     try {
       const transactionResult = await server.submitTransaction(transaction);
-      console.log(transactionResult, "transactionResult");
       return {
         transactionId: transactionResult.id,
         transactionSequence: transactionResult.source_account_sequence,
@@ -363,10 +314,10 @@ const Pay = () => {
     if (nonprofit.length < 5) {
       alert.error("Choose a nonprofit or Something repeats.");
     } else {
+      handler();
+      setLoading(true);
       const transaction = await mine();
-      console.log(transaction);
       let mineSequence = transaction?.transactionSequence;
-      console.log(mineSequence, "mine result");
       const tempdata = [];
       if (mineSequence) {
         for (const key in total) {
@@ -384,13 +335,10 @@ const Pay = () => {
         let artOutComeLevel = [];
         tempdata.map((item) => {
           artOutComeNumber.push(item.numbersOnly);
-          console.log(item.memoname);
           artOutComeLevel.push(ScarcityLevel(item.memoname, item.numbersOnly));
         });
         setInfo(tempdata);
-
         setLevel(artOutComeLevel);
-        handler();
         let flag = 0;
         ArtImage(artOutComeNumber, artOutComeLevel, flag).then((res) => {
           console.log(
@@ -398,12 +346,11 @@ const Pay = () => {
             "image url array... if app didn't find url, in modal it output question mark image with some info. "
           );
           setAllData(res[0].alldata);
+          setLoading(false);
         });
       }
     }
   };
-
-  const handleSend = async () => {};
   return (
     <>
       <Wrapper>
@@ -428,7 +375,7 @@ const Pay = () => {
             </ImageGroup>
           </CardContainer>
         </Dashboard>
-        <Dashboard2>
+        {/* <Dashboard2>
           <Title>
             Enter your Stellar Lumens account no. (if you don’t have one, go get
             one)
@@ -487,7 +434,7 @@ const Pay = () => {
           </>
           <ConnectInput name="secretKey" onChange={getSendInfo} />
           <Button>Send</Button>
-        </Dashboard3>
+        </Dashboard3> */}
         <Dashboard2>
           <Title>Mine and Mint New GC for yourself</Title>
           <Text>
@@ -497,7 +444,7 @@ const Pay = () => {
           </Text>
           <CardContainer style={{ alignItems: "flex-start" }}>
             <Col style={{ gap: "20px" }}>
-              {card.map((item, key) => (
+              {CoinData.map((item, key) => (
                 <CardContent
                   name={item.name}
                   src={item.src}
@@ -641,41 +588,56 @@ const Pay = () => {
         <Modal open={visible} onClose={closeHandler} width="800px">
           <Modal.Header
             css={{ position: "absolute", zIndex: "$1", top: 5, right: 8 }}
-          ></Modal.Header>
+          />
+          {loading && <Loading />}
           <Modal.Body>
             <Col>
               {info &&
                 info.map((item, key) => (
-                  <ImageContainer key={key} memoname={item?.memoname} level="1">
+                  <ImageContainer
+                    memoname={item?.memoname.replace(/[a-z]/gi, "")}
+                    level={99}
+                  >
                     <ImageWrapper>
                       <Row>{item?.checkbill}</Row>
                       <ImageGroup2>
+                        <DateContainer>
+                          {new Date(item?.created_at).getFullYear()}
+                        </DateContainer>
                         <DefaultImage
                           src={
                             alldata[key]?.jpgfile ??
-                            ImageCheck(item?.memoname, level[key])
+                            ImageCheck(
+                              item?.memoname.replace(/[a-z]/gi, ""),
+                              level[key]
+                            )
                           }
                         />
                         <DetailWrapper>
-                          <TokenEditor>
-                            <Text>Title</Text>
-                            <Text>{allValues?.title}</Text>
-                          </TokenEditor>
-                          <TokenEditor>
-                            <Text>By</Text>
-                            <Text>{allValues?.by}</Text>
-                          </TokenEditor>
-                          <TokenEditor>
-                            <Text>Born</Text>
-                            <Text>{allValues?.born}</Text>
-                          </TokenEditor>
-                          <TokenEditor>
-                            <Text>For</Text>
-                            <Text>{allValues?.forwhat}</Text>
-                          </TokenEditor>
+                          <TokenEditor>For Living Independence</TokenEditor>
                         </DetailWrapper>
                       </ImageGroup2>
-                      <>{item?.numbersOnly}</>
+                      <Column>
+                        {level[key] === 0 ? (
+                          <>
+                            <Text2>
+                              {CoinData.map(
+                                (items, keys) =>
+                                  (items.value ?? +items.name) ===
+                                    +item?.memoname.replace(/[a-z]/gi, "") && (
+                                    <Column key={keys}>{items.title}</Column>
+                                  )
+                              )}
+                            </Text2>
+                            <Text2> {"Rian Firdaus"}</Text2>
+                          </>
+                        ) : (
+                          <>
+                            <Text2>{alldata[key]?.title} &nbsp; </Text2>
+                            <Text2> {alldata[key]?.artistname}&nbsp; </Text2>
+                          </>
+                        )}
+                      </Column>
                     </ImageWrapper>
                   </ImageContainer>
                 ))}
@@ -714,9 +676,9 @@ const Dashboard2 = styled(Column)`
   padding-bottom: 30px;
 `;
 
-const Dashboard3 = styled(Dashboard2)`
-  align-items: flex-start;
-`;
+// const Dashboard3 = styled(Dashboard2)`
+//   align-items: flex-start;
+// `;
 
 const Dashboard4 = styled(Dashboard2)`
   border: 0;
@@ -763,9 +725,9 @@ const ImageGroup = styled(Column)`
   gap: 10px;
 `;
 
-const ConnectWrapper = styled(Row)`
-  gap: 20px;
-`;
+// const ConnectWrapper = styled(Row)`
+//   gap: 20px;
+// `;
 
 const CheckBill = styled(Row)`
   gap: 20px;
@@ -820,16 +782,16 @@ const ImageContainer = styled(Row)`
   background-repeat: no-repeat;
   background-size: contain;
   height: 400px;
-  margin: 0px 50px;
   width: 100%;
   overflow-y: auto;
+  padding: 0px 10px;
 `;
 const ImageWrapper = styled(Column)`
   font-size: 12px;
   color: #ffffff;
-  height: 390px;
   justify-content: space-around;
   width: 100%;
+  height: 100%;
 `;
 const DetailWrapper = styled(Column)`
   gap: 5px;
@@ -839,15 +801,25 @@ const DetailWrapper = styled(Column)`
 `;
 const TokenEditor = styled(Row)`
   gap: 10px;
-  div {
-    font-size: 14px;
-  }
+  font-size: 20px;
+  color: #ffffff;
 `;
 const ImageGroup2 = styled(Row)`
-  gap: 80px;
+  gap: 90px;
   img {
     width: 100px;
-    padding-left: 180px;
+    margin-left: 50px;
   }
+`;
+
+const DateContainer = styled(Row)`
+  font-size: 12px;
+  color: white;
+  margin-top: 110px;
+  margin-left: 25px;
+`;
+const Text2 = styled(Row)`
+  font-size: 9px;
+  color: white;
 `;
 export default Pay;

@@ -116,6 +116,7 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                               50 + artOutComeLevel[k]
                             ) {
                               memoTransactions.push(tran[i]);
+                              console.log(tran[i]);
                             }
                           }
                         }
@@ -144,26 +145,19 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
         const sortedTransactions = trans.sort(
           (a, b) => a.paging_token - b.paging_token
         );
-
         const templength = digits_count(trans.length);
-        const artcycle = artOutComeNumber[k].slice(
-          artOutComeNumber[k].length - +templength
-        );
         arr3.push(sortedTransactions);
-        console.log(
-          sortedTransactions,
-          trans,
-          "transaction that has url and pass some checking",
-          artcycle
-        );
         await Promise.all(
           sortedTransactions.map(async (items, key) => {
-            if (key + 1 === +artcycle % sortedTransactions.length) {
-              console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-              await layerGifOnImage(items.memo).then((res) => {
-                arr.push(res);
-              });
-            }
+            artOutComeNumber.map(async (artNumber, key) => {
+              const artcycle = artNumber.slice(artNumber.length - +templength);
+              if (key + 1 === +artcycle % sortedTransactions.length) {
+                console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
+                await layerGifOnImage(items.memo).then((res) => {
+                  arr.push(res);
+                });
+              }
+            });
           })
         );
       } else {

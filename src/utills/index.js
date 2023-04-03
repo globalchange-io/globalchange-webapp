@@ -120,7 +120,7 @@ export const getOperation = (transactionHash) => {
 };
 export const ImageCheck = (memoname, level) => {
   console.log(memoname, level, "sdf");
-  if (level > 0) {
+  if (level === 99) {
     switch (+memoname) {
       case 1:
         return onegc;
@@ -143,7 +143,8 @@ export const ImageCheck = (memoname, level) => {
       default:
         break;
     }
-  } else {
+  }
+  if (level === 0) {
     switch (+memoname) {
       case 0.01:
         return Card10;
@@ -220,7 +221,7 @@ export const ScarcityLevel = (denomination, artOutcome) => {
 
   const thresholds = {
     1: [
-      0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001,
+      0.99, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001,
       0.000000001, 0.0000000001, 0.00000000001, 0.000000000000001,
     ],
     2: [

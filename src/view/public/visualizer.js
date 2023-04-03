@@ -7,10 +7,10 @@ import {
   artOutCome,
   getOperation,
   ImageCheck,
-  layerGifOnImage,
   ScarcityLevel,
 } from "../../utills";
 import ArtImage from "../../components/artimage";
+import { CoinData } from "../../components/data/coindata";
 
 const Visualizer = () => {
   const columns = [
@@ -112,10 +112,48 @@ const Visualizer = () => {
             />
           </div>
           Artist Name: Rian Firdaus
-          <div>Title of Art: depends on Denomination : {allinfo?.allmemo}</div>
           <div>
-            {allinfo?.memoname} : {allinfo?.memoname}
+            Title of Art:
+            {CoinData.map(
+              (item) =>
+                (item.value ?? item.name) ===
+                  +allinfo?.memoname.replace(/[a-z]/gi, "") && <>{item.title}</>
+            )}
           </div>
+          <ImageContainer
+            memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
+            level={99}
+          >
+            <ImageWrapper>
+              <Row>{bill}</Row>
+              <ImageGroup2>
+                <DateContainer>
+                  {new Date(allinfo?.created_at).getFullYear()}
+                </DateContainer>
+                <DefaultImage
+                  src={ImageCheck(
+                    allinfo?.memoname.replace(/[a-z]/gi, ""),
+                    scarcitylevelvalue
+                  )}
+                />
+                <DetailWrapper>
+                  <TokenEditor>For Living Independence</TokenEditor>
+                </DetailWrapper>
+              </ImageGroup2>
+              <Column>
+                <Text>
+                  {CoinData.map(
+                    (item) =>
+                      (item.value ?? item.name) ===
+                        +allinfo?.memoname.replace(/[a-z]/gi, "") && (
+                        <>{item.title}</>
+                      )
+                  )}
+                </Text>
+                <Text> {"Rian Firdaus"}</Text>
+              </Column>
+            </ImageWrapper>
+          </ImageContainer>
         </>
       ) : (
         <>
@@ -130,6 +168,27 @@ const Visualizer = () => {
           <div>Image :{alldata?.jpgfile}</div>
           <div>Artist Name: {alldata?.artistname}</div>
           <div>Title of Art (from JSON) : {alldata?.title}</div>
+          <ImageContainer
+            memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
+            level={99}
+          >
+            <ImageWrapper>
+              <Row>{bill}</Row>
+              <ImageGroup2>
+                <DateContainer>
+                  {new Date(allinfo?.created_at).getFullYear()}
+                </DateContainer>
+                <DefaultImage src={alldata?.jpgfile} />
+                <DetailWrapper>
+                  <TokenEditor>For Living Independence</TokenEditor>
+                </DetailWrapper>
+              </ImageGroup2>
+              <Column>
+                <Text>{alldata?.title} &nbsp; </Text>
+                <Text> {alldata?.artistname}&nbsp; </Text>
+              </Column>
+            </ImageWrapper>
+          </ImageContainer>
         </>
       )}
       <>
@@ -137,29 +196,6 @@ const Visualizer = () => {
         {artList &&
           artList.map((item, key) => <div key={key}>{item.memo}</div>)}
       </>
-      <ImageContainer
-        memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
-        level="1"
-      >
-        <ImageWrapper>
-          <Row>{bill}</Row>
-          <ImageGroup2>
-            <DefaultImage
-              src={
-                alldata?.jpgfile ??
-                ImageCheck(allinfo?.memoname, scarcitylevelvalue)
-              }
-            />
-            <DetailWrapper>
-              <TokenEditor>For Living Independence</TokenEditor>
-            </DetailWrapper>
-          </ImageGroup2>
-          <Column>
-            <Text>{alldata?.title ?? "Art Starts"}</Text>
-            <Text> {alldata?.artistname ?? "Rian Firdaus"}</Text>
-          </Column>
-        </ImageWrapper>
-      </ImageContainer>
     </Wrapper>
   );
 };
@@ -186,6 +222,7 @@ const ImageContainer = styled(Row)`
   height: 400px;
   width: 100%;
   overflow-y: auto;
+  padding: 0px 10px;
 `;
 const ImageWrapper = styled(Column)`
   font-size: 12px;
@@ -204,18 +241,24 @@ const TokenEditor = styled(Row)`
   gap: 10px;
   font-size: 20px;
   color: #ffffff;
-  left: 20px;
 `;
 const ImageGroup2 = styled(Row)`
-  gap: 60px;
+  gap: 90px;
   img {
-    width: 150px;
-    padding-left: 170px;
+    width: 100px;
+    margin-left: 50px;
   }
 `;
 
 const Text = styled(Row)`
-  font-size: 8px;
+  font-size: 9px;
   color: white;
 `;
+const DateContainer = styled(Row)`
+  font-size: 12px;
+  color: white;
+  margin-top: 110px;
+  margin-left: 25px;
+`;
 export default Visualizer;
+// -sds6fffrfnulabscrcboom;
