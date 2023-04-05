@@ -146,18 +146,19 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
           (a, b) => a.paging_token - b.paging_token
         );
         const templength = digits_count(trans.length);
+        const artcycle = artOutComeNumber[k].slice(
+          artOutComeNumber[k].length - +templength
+        );
         arr3.push(sortedTransactions);
         await Promise.all(
           sortedTransactions.map(async (items, key) => {
-            artOutComeNumber.map(async (artNumber, key) => {
-              const artcycle = artNumber.slice(artNumber.length - +templength);
-              if (key + 1 === +artcycle % sortedTransactions.length) {
-                console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-                await layerGifOnImage(items.memo).then((res) => {
-                  arr.push(res);
-                });
-              }
-            });
+            console.log(artcycle % sortedTransactions.length, "ASdfasdf");
+            if (key + 1 === +artcycle % sortedTransactions.length) {
+              console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
+              await layerGifOnImage(items.memo).then((res) => {
+                arr.push(res);
+              });
+            }
           })
         );
       } else {
