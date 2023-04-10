@@ -3,6 +3,18 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Column } from "../../components/element";
 import axios from "axios";
+import { addressdata } from "../../components/data/addressdata";
+import SelectBox from "../../components/select";
+import DatePicker from "react-datepicker";
+import {
+  Keypair,
+  Server,
+  TransactionBuilder,
+  Networks,
+  Operation,
+  Asset,
+  Memo,
+} from "stellar-sdk";
 
 const UploadIndex = () => {
   const [allinfo, setAllInfo] = useState({
@@ -42,56 +54,162 @@ const UploadIndex = () => {
         console.error(error);
       });
   };
-  return (
-    <Wrapper>
-      <Input
-        clearable
-        label="Enter Name of Artist"
-        fullWidth
-        name="artistname"
-        onChange={handleChange}
-      />
-      <Input
-        clearable
-        label="Enter Title of Art"
-        fullWidth
-        name="title"
-        onChange={handleChange}
-      />
-      <Input
-        clearable
-        label="Ente URL of image to appear on bill (e.g. small .jpg, .gif, moving gif)"
-        fullWidth
-        onChange={handleChange}
-        name="jpgfile"
-      />
-      <Input
-        clearable
-        fullWidth
-        onChange={handleChange}
-        label="Enter URL of full image or other media or file (e.g. .mov, .mp3, .exe)"
-        name="videofile"
-      />
-      <Input
-        clearable
-        onChange={handleChange}
-        label="Enter additional URL, text, message, etc."
-        fullWidth
-        name="text"
-      />
-      <Input
-        clearable
-        onChange={handleChange}
-        fullWidth
-        name="resales"
-        label="Enter Stellar Lumens account number to receive % of future resales "
-      />
+  const [allinfosend, setAllInfoSend] = useState({
+    jsonurl: "",
+    level: "",
+    key: "",
+  });
+  const [startDate, setStartDate] = useState(new Date("1993-03-03"));
+  const [hash, setHash] = useState();
+  const sourceKeypair = Keypair.fromSecret(
+    "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG"
+  );
+  const sourcePublicKey = sourceKeypair.publicKey();
+  const server = new Server("https://horizon.stellar.org");
 
-      <Button color="primary" auto ghost onClick={handleClick}>
-        Generate JSON
-      </Button>
-      <Row>{url && url}</Row>
-    </Wrapper>
+  const [nonprofit, setNonprofit] = useState([]);
+
+  const [nonprofitDetail, setNonprofitDetail] = useState(addressdata);
+  const handleChange2 = (e) => {
+    setAllInfoSend({ ...allinfosend, [e.target.name]: e.target.value });
+  };
+  const Submit = async (e) => {
+    console.log(
+      nonprofit[0]?.address,
+      "nonprofit",
+      (50 + +allinfo?.level) / Math.pow(10, 7),
+      "level",
+      allinfo?.jsonurl
+    );
+
+    const date = Math.floor(new Date(startDate) / 1000) + 300;
+    // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
+    const account = await server.loadAccount(sourcePublicKey);
+    const fee = await server.fetchBaseFee();
+    const transaction = new TransactionBuilder(account, {
+      fee,
+      networkPassphrase: Networks.PUBLIC,
+      timebounds: {
+        minTime: date,
+        maxTime: "0",
+      },
+    })
+      .addOperation(
+        Operation.payment({
+          destination: nonprofit[0]?.address,
+          asset: Asset.native(),
+          amount: ((50 + +allinfo?.level) / Math.pow(10, 7)).toString(),
+        })
+      )
+      .setTimeout(30)
+      .addMemo(Memo.text(allinfo?.jsonurl))
+      .build();
+
+    transaction.sign(sourceKeypair);
+
+    try {
+      const transactionResult = await server.submitTransaction(transaction);
+      console.log(transactionResult, "transactionResult");
+      setHash(transactionResult.hash);
+      return {
+        transactionId: transactionResult.id,
+        transactionSequence: transactionResult.source_account_sequence,
+        transactionLink: transactionResult._links.transaction.href,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  return (
+    <>
+      <Wrapper>
+        <Input
+          clearable
+          label="Enter Name of Artist"
+          fullWidth
+          name="artistname"
+          onChange={handleChange}
+        />
+        <Input
+          clearable
+          label="Enter Title of Art"
+          fullWidth
+          name="title"
+          onChange={handleChange}
+        />
+        <Input
+          clearable
+          label="Ente URL of image to appear on bill (e.g. small .jpg, .gif, moving gif)"
+          fullWidth
+          onChange={handleChange}
+          name="jpgfile"
+        />
+        <Input
+          clearable
+          fullWidth
+          onChange={handleChange}
+          label="Enter URL of full image or other media or file (e.g. .mov, .mp3, .exe)"
+          name="videofile"
+        />
+        <Input
+          clearable
+          onChange={handleChange}
+          label="Enter additional URL, text, message, etc."
+          fullWidth
+          name="text"
+        />
+        <Input
+          clearable
+          onChange={handleChange}
+          fullWidth
+          name="resales"
+          label="Enter Stellar Lumens account number to receive % of future resales "
+        />
+
+        <Button color="primary" auto ghost onClick={handleClick}>
+          Generate JSON
+        </Button>
+        <Row>{url && url}</Row>
+      </Wrapper>
+      <Wrapper>
+        <SelectBox
+          nonprofitDetail={nonprofitDetail}
+          setNonprofit={setNonprofit}
+          nonprofit={nonprofit}
+        />
+        <Input
+          clearable
+          label="Enter URL of JSON file"
+          fullWidth
+          name="jsonurl"
+          onChange={handleChange2}
+        />
+        <Input
+          clearable
+          label="Enter Scarcity level 1-12"
+          fullWidth
+          onChange={handleChange2}
+          name="level"
+        />
+        <Input
+          clearable
+          fullWidth
+          onChange={handleChange2}
+          label="Enter your Stellar Lumens private key OR leave blank to connect wallet (sending art requires a SL transaction)"
+          name="key"
+        />
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          minDate={new Date("1993-03-03")}
+          maxDate={new Date("1999-12-31")}
+        />
+        <Button color="primary" auto ghost onClick={Submit}>
+          SendArt
+        </Button>
+        <Row>{hash && hash}</Row>
+      </Wrapper>
+    </>
   );
 };
 

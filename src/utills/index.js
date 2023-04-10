@@ -71,9 +71,10 @@ export const artOutCome = async (checkbill) => {
             res.source_account_sequence + resp.hash
           ).toString();
           console.log(
-            hash,
+            resp,
             "ledgerhash + resp.hash)",
-            res.source_account_sequence + resp.hash
+            res.source_account_sequence + resp.hash,
+            res
           );
           const numbersOnly = "0." + hash.replace(/[a-z]/gi, "");
           // let formattedNum = numbersOnly.replace(/0$/, "");
@@ -104,22 +105,23 @@ export const artOutCome = async (checkbill) => {
       console.error(err);
     });
 };
-export const getOperation = (transactionHash) => {
-  server
-    .operations()
+export const getOperation = async (transactionHash) => {
+  return await server
+    .effects()
     .forTransaction(transactionHash)
     .call()
     .then((response) => {
-      // Process the response to get the operation address
-      const operationAddress = response.records[0].to;
-      console.log(`Operation address: ${operationAddress}`);
+      const data = response.records.filter(
+        (item) => item.type === "account_credited" && item.account
+      );
+      return data;
     })
     .catch((error) => {
       console.error(error);
     });
 };
 export const ImageCheck = (memoname, level) => {
-  console.log(memoname, level, "sdf");
+  console.log(memoname, "memo", level, "Level");
   if (level === 99) {
     switch (+memoname) {
       case 1:

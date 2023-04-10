@@ -27,6 +27,7 @@ import { useAlert } from "react-alert";
 import Analog from "../../components/analog";
 import { Card1, Card2 } from "../../config/images";
 import { CoinData } from "../../components/data/coindata";
+import { addressdata } from "../../components/data/addressdata";
 window.Buffer = Buffer;
 
 const Pay = () => {
@@ -41,69 +42,7 @@ const Pay = () => {
   const [totalXLM, setTotalXML] = useState(0);
   const [sendEachActual, setSendEachActual] = useState(0);
   const [level, setLevel] = useState();
-  const [nonprofitDetail, setNonprofitDetail] = useState([
-    { name: "none", value: "none" },
-    {
-      name: "Bali Food Bank",
-      value: "GC4EN3GEKM2SOCIBMW3URTQSPIYCTFNOK5ZWDUBOT3ZSXKHGZKFO76MK",
-    },
-    {
-      name: "Heifer International",
-      value: "GBY6IQU3COE7SPWRNIVX72NSPAIK2X6O3WLFWAS3CXDSMJUJ35JT6HEA",
-    },
-    {
-      name: "Crypto for the Homeless",
-      value: "GB4ZF5RC42KIKVGODIELXAAXFZM2ZGJTYN37WHFP74WE373ZUKIYOUUP",
-    },
-    {
-      name: "Women Who Code",
-      value: "GB2OSOAYVKT5O3QTXJ6U3C6NYX2U5X3CSXDSACNQBWEEVGLCWYALO4TA",
-    },
-    {
-      name: "Aid for Ukraine",
-      value: "GD7ZVRSGHETEYLB4XUVFVGFWJKNDHORHAY72HZVXYFINUNZSRVABKVSH",
-    },
-    {
-      name: " University of San Francisco",
-      value: "GAO63FGKTVLS43OBSL6THTNB2R4IQHZOFYKWTV5L6ZOHLTB4MRPBTQ3X",
-    },
-    {
-      name: "Freedom of the Press Foundation",
-      value: "GB5A3OA657UWF3BN7WU4XFFWT333HFP2KFK2OFAXPEL3BBGQ7QLRNASG",
-    },
-    {
-      name: "Coin Center",
-      value: "GBKCLZSQZQR5MM6WWL3CUJWX6QSE74XODUU34BBGT7SVD32BWJQIX7ER",
-    },
-    {
-      name: "Global Emancipation Network",
-      value: "GAWGCWX3VD2MMCNK4KNECPBMNLVNFE4GLB5DV4ZT3YFBS6NWFI7K6THI",
-    },
-    {
-      name: "For Living Independence",
-      value: "GCQC3WNP6PG463276UP4B4NKTXGMKMKC2OWVRQOOABMZW7Q6OBAYVTWI",
-    },
-    {
-      name: "EmpowerED Pathways",
-      value: "GB6FL35A2476K7OQ5EIJCOHJNZECN6HTIJKQV5TZ5FSE5CXGYU2RD25L",
-    },
-    {
-      name: "Fight for the Future Fund",
-      value: "GCGNWKCJ3KHRLPM3TM6N7D3W5YKDJFL6A2YCXFXNMRTZ4Q66MEMZ6FI2",
-    },
-    {
-      name: "Solar Dos Abraxis",
-      value: "GDCQ5TKZXF7FSILKZNBN274RKZGVVDJ4G3NXAJLPIFUTXMEOQ4JODM5C",
-    },
-    {
-      name: " Tor Project",
-      value: "GABWGQEQESRX5TKDTPIYJFPKGJDMEW6VLOOLBTIFPJIN7XT6KAFXJQPJ",
-    },
-    {
-      name: "Stellar.expert",
-      value: "GDQ75AS5VSH3ZHZI3P4TAVAOOSNHN346KXJOPZVQMMS27KNCC5TOQEXP",
-    },
-  ]);
+  const [nonprofitDetail, setNonprofitDetail] = useState(addressdata);
   const [info, setInfo] = useState();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -115,11 +54,7 @@ const Pay = () => {
     secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     newnonprofitname: "",
   });
-  // const [sendinfo, setSendInfo] = useState({
-  //   secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
-  //   memo: "",
-  //   sendaddress: "",
-  // });
+
   const [alldata, setAllData] = useState([]);
   const sourceKeypair = Keypair.fromSecret(inputInfo.secretKey);
   const sourcePublicKey = sourceKeypair.publicKey();
@@ -127,9 +62,7 @@ const Pay = () => {
   const getInfo = (e) => {
     setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
   };
-  // const getSendInfo = (e) => {
-  //   setSendInfo({ ...sendinfo, [e.target.name]: e.target.value });
-  // };
+
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
@@ -182,17 +115,7 @@ const Pay = () => {
       },
     });
   };
-  // const connectClick = async (e) => {
-  //   const res = await getTransactions(inputInfo.accountKey);
-  //   const regex = /^[\d.]+ GC \d+$/;
-  //   const regex2 = /^[\d.]+GC \d+$/;
 
-  //   const filterData = res.filter(
-  //     (items) =>
-  //       regex.test(items.memo) === true || regex2.test(items.memo) === true
-  //   );
-  //   console.log(filterData, "sd");
-  // };
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
@@ -375,66 +298,7 @@ const Pay = () => {
             </ImageGroup>
           </CardContainer>
         </Dashboard>
-        {/* <Dashboard2>
-          <Title>
-            Enter your Stellar Lumens account no. (if you don’t have one, go get
-            one)
-          </Title>
-          <CheckBill>
-            <ConnectInput
-              onChange={getInfo}
-              name="accountKey"
-              value={inputInfo.accountKey}
-            />
-            <Button onClick={(e) => connectClick()}>Connect Account</Button>
-          </CheckBill>
-          <CardContainer>
-            <Col>
-              <span>Account Balances</span>
-              <TextContainer>
-                GC
-                {inputInfo.accountKey ? <>5421</> : <>no account connected</>}
-              </TextContainer>
-              <TextContainer>
-                GC
-                {inputInfo.accountKey ? (
-                  <>33.3314</>
-                ) : (
-                  <>no account connected</>
-                )}
-              </TextContainer>
-            </Col>
-            <Col
-              style={{
-                background: "rgba(27, 94, 118, 0.21)",
-              }}
-            >
-              <span>Current Cost of 1 GC</span>
-              <TextContainer>
-                USD <div>{(currentCPI / 300).toFixed(2)}</div>
-              </TextContainer>
-              <TextContainer>
-                XLM <div>{((1 * (currentCPI / 300)) / xlmusd).toFixed(7)} </div>
-              </TextContainer>
-            </Col>
-          </CardContainer>
-        </Dashboard2>
-        <Dashboard3>
-          <Title>Send GC (pay someone) </Title>
-          <>Recipient account or GC nickname</>
-          <ConnectInput name="sendaddress" onChange={getSendInfo} />
-          <>Amount to send</>
-          <ConnectWrapper>
-            <ConnectInput name="memo" onChange={getSendInfo} />
-            <>GC</>
-          </ConnectWrapper>
-          <>
-            Your Stellar Lumens account private key OR leave blank to connect
-            wallet (Freighter)
-          </>
-          <ConnectInput name="secretKey" onChange={getSendInfo} />
-          <Button>Send</Button>
-        </Dashboard3> */}
+
         <Dashboard2>
           <Title>Mine and Mint New GC for yourself</Title>
           <Text>
@@ -676,10 +540,6 @@ const Dashboard2 = styled(Column)`
   padding-bottom: 30px;
 `;
 
-// const Dashboard3 = styled(Dashboard2)`
-//   align-items: flex-start;
-// `;
-
 const Dashboard4 = styled(Dashboard2)`
   border: 0;
   padding: 0px;
@@ -724,10 +584,6 @@ const ImageGroup = styled(Column)`
   text-align: center;
   gap: 10px;
 `;
-
-// const ConnectWrapper = styled(Row)`
-//   gap: 20px;
-// `;
 
 const CheckBill = styled(Row)`
   gap: 20px;
@@ -784,14 +640,13 @@ const ImageContainer = styled(Row)`
   height: 400px;
   width: 100%;
   overflow-y: auto;
-  padding: 0px 10px;
 `;
 const ImageWrapper = styled(Column)`
   font-size: 12px;
   color: #ffffff;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
-  height: 100%;
+  gap: 90px;
 `;
 const DetailWrapper = styled(Column)`
   gap: 5px;
@@ -799,15 +654,15 @@ const DetailWrapper = styled(Column)`
   max-width: 100px;
   width: 100%;
 `;
-const TokenEditor = styled(Row)`
-  gap: 10px;
-  font-size: 20px;
+const TokenEditor = styled(Column)`
+  gap: 4px;
+  font-size: 14px;
   color: #ffffff;
+  align-items: flex-start;
 `;
 const ImageGroup2 = styled(Row)`
   gap: 90px;
   img {
-    width: 100px;
     margin-left: 50px;
   }
 `;

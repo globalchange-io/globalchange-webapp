@@ -5,11 +5,12 @@ import {
   Public_Special,
   Public_Upload,
   Public_Visualizer,
+  Public_Wallet,
 } from "../../config";
 import Pay from "./pay";
 import Error from "./404error";
 import Special from "./specialnft";
-import Sendart from "./sendart";
+import Sendart from "./sendgc";
 import Upload from "./upload";
 import Visualizer from "./visualizer";
 const PublicPage = () => {
@@ -21,6 +22,7 @@ const PublicPage = () => {
         <Route path={Public_Upload} element={<Upload />} />
         <Route path={Public_Send} element={<Sendart />} />
         <Route path={Public_Visualizer} element={<Visualizer />} />
+        <Route path={Public_Wallet} element={<Visualizer />} />
         <Route path="/*" element={<Error />} />
       </Routes>
     </>

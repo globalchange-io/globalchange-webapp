@@ -22,6 +22,7 @@ const Wrapper = styled(Column)`
 const WrapperContent = styled(Column)`
   max-width: 1440px;
   padding: 50px;
+  width: 100%;
   @media screen and (max-width: 450px) {
     padding: 20px;
   }

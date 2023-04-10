@@ -25,10 +25,11 @@ const Header = () => {
       <WrapperContent>
         <DefaultImage src={logo} />
         <MenuContent>
-          <MenuContentItem to="/">Mine/pay</MenuContentItem>
-          <MenuContentItem to="/upload">Create JSON</MenuContentItem>
-          <MenuContentItem to="/send">Send Art</MenuContentItem>
+          <MenuContentItem to="/">Mining/Minting</MenuContentItem>
           <MenuContentItem to="/visualizer">Visualizer</MenuContentItem>
+          <MenuContentItem to="/smart">Smart Wallet</MenuContentItem>
+          <MenuContentItem to="/upload">Upload art</MenuContentItem>
+          <MenuContentItem to="/send">Send GC</MenuContentItem>
         </MenuContent>
         <ButtonGroup>
           {!toggle ? (
@@ -39,10 +40,11 @@ const Header = () => {
               <DropdownMenu>
                 <MenuContent2>
                   <DefaultImage src={logo} />
-                  <MenuContentItem to="/">Mine/pay</MenuContentItem>
-                  <MenuContentItem to="/upload">Create JSON</MenuContentItem>
-                  <MenuContentItem to="/send">Send </MenuContentItem>
+                  <MenuContentItem to="/">Mining/Minting</MenuContentItem>
                   <MenuContentItem to="/visualizer">Visualizer</MenuContentItem>
+                  <MenuContentItem to="/smart">Smart Wallet</MenuContentItem>
+                  <MenuContentItem to="/upload">Upload art</MenuContentItem>
+                  <MenuContentItem to="/send">Send GC</MenuContentItem>
                 </MenuContent2>
               </DropdownMenu>
             </Row>

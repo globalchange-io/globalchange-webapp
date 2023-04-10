@@ -11,39 +11,17 @@ import {
 } from "../../utills";
 import ArtImage from "../../components/artimage";
 import { CoinData } from "../../components/data/coindata";
+import { addressdata } from "../../components/data/addressdata";
 
 const Visualizer = () => {
-  const columns = [
-    {
-      address: "Bali Food Bank",
-      label: "nonprofit1",
-    },
-    {
-      address: "Heifer International",
-      label: "nonprofit2",
-    },
-    {
-      address: "Crypto for the Homeless",
-      label: "nonprofit3",
-    },
-    {
-      address: "Women Who Code",
-      label: "nonprofit4",
-    },
-    {
-      address: "Global Emancipation Network",
-      label: "nonprofit5",
-    },
-  ];
-  const [bill, setBill] = useState(
-    "3fefa61141485441f3e65069bebf814b4e8449a89d8b1244a73bdbd42037d18a"
-  );
+  const [bill, setBill] = useState("");
+  // 3fefa61141485441f3e65069bebf814b4e8449a89d8b1244a73bdbd42037d18a
   const [allinfo, setAllInfo] = useState();
   const [alldata, setAllData] = useState();
+  const [operationData, setOperationData] = useState();
   const [scarcitylevelvalue, setScarcityLevel] = useState();
   const [artList, setArtList] = useState();
   const handleClick = async () => {
-    getOperation(bill);
     const res = await artOutCome(bill);
     let artOutComeNumber = [];
     let artOutComeLevel = [];
@@ -61,13 +39,29 @@ const Visualizer = () => {
     );
     if (artOutComeLevel[0] !== 0) {
       ArtImage(artOutComeNumber, artOutComeLevel, res.flag).then((res) => {
-        setArtList(res[0].artlistdata[0]);
+        addressdata.filter((address) => {
+          if (res[0].artlistdata[0] === address.value) {
+            setOperationData(address.name);
+          }
+        });
         setAllData(res[0].alldata[0]);
         console.log(
           res,
           "image url array... if app didn't find url, in modal it output question mark image with some info. "
         );
       });
+    } else {
+      const data = await getOperation(bill);
+      console.log(data, "Datasa");
+      let operationdata = [];
+      data.map((item) => {
+        addressdata.filter((address) => {
+          if (item.account === address.value) {
+            operationdata.push(address.name);
+          }
+        });
+      });
+      setOperationData(operationdata);
     }
   };
   return (
@@ -81,10 +75,10 @@ const Visualizer = () => {
         />
         <Button onClick={handleClick}>See Bill</Button>
       </BillInput>
-      <div>
+      {/* <div>
         Bill's Serial Number (new) :
         6b1bc7715a56d6b1b57c69613a85246f37daf3ed58a245d3634c3472087b0fe0
-      </div>
+      </div> */}
       <div>Account that minted bill : {allinfo?.account}</div>
       <div>Bill's memo : {allinfo?.allmemo}</div>
       <div>Bill's denomination : {allinfo?.memoname}</div>
@@ -115,9 +109,11 @@ const Visualizer = () => {
           <div>
             Title of Art:
             {CoinData.map(
-              (item) =>
+              (item, key) =>
                 (item.value ?? item.name) ===
-                  +allinfo?.memoname.replace(/[a-z]/gi, "") && <>{item.title}</>
+                  +allinfo?.memoname.replace(/[a-z]/gi, "") && (
+                  <Row key={key}>{item.title}</Row>
+                )
             )}
           </div>
           <ImageContainer
@@ -137,13 +133,17 @@ const Visualizer = () => {
                   )}
                 />
                 <DetailWrapper>
-                  <TokenEditor>For Living Independence</TokenEditor>
+                  <TokenEditor>
+                    {operationData?.map((item, key) => (
+                      <Row key={key}>{item}</Row>
+                    ))}
+                  </TokenEditor>
                 </DetailWrapper>
               </ImageGroup2>
               <Column>
                 <Text>
                   {CoinData.map(
-                    (item) =>
+                    (item, key) =>
                       (item.value ?? item.name) ===
                         +allinfo?.memoname.replace(/[a-z]/gi, "") && (
                         <>{item.title}</>
@@ -180,7 +180,7 @@ const Visualizer = () => {
                 </DateContainer>
                 <DefaultImage src={alldata?.jpgfile} />
                 <DetailWrapper>
-                  <TokenEditor>For Living Independence</TokenEditor>
+                  <TokenEditor>{operationData && operationData}</TokenEditor>
                 </DetailWrapper>
               </ImageGroup2>
               <Column>
@@ -189,13 +189,15 @@ const Visualizer = () => {
               </Column>
             </ImageWrapper>
           </ImageContainer>
+          {/* <>
+            Artlist:
+            {artList &&
+              artList.map((item, key) => (
+                <Column key={key}>{item.data.memo}</Column>
+              ))}
+          </> */}
         </>
       )}
-      <>
-        Artlist:
-        {artList &&
-          artList.map((item, key) => <div key={key}>{item.memo}</div>)}
-      </>
     </Wrapper>
   );
 };
@@ -222,14 +224,13 @@ const ImageContainer = styled(Row)`
   height: 400px;
   width: 100%;
   overflow-y: auto;
-  padding: 0px 10px;
 `;
 const ImageWrapper = styled(Column)`
   font-size: 12px;
   color: #ffffff;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
-  height: 100%;
+  gap: 90px;
 `;
 const DetailWrapper = styled(Column)`
   gap: 5px;
@@ -237,15 +238,15 @@ const DetailWrapper = styled(Column)`
   max-width: 100px;
   width: 100%;
 `;
-const TokenEditor = styled(Row)`
-  gap: 10px;
-  font-size: 20px;
+const TokenEditor = styled(Column)`
+  gap: 4px;
+  font-size: 14px;
   color: #ffffff;
+  align-items: flex-start;
 `;
 const ImageGroup2 = styled(Row)`
   gap: 90px;
   img {
-    width: 100px;
     margin-left: 50px;
   }
 `;
@@ -261,4 +262,3 @@ const DateContainer = styled(Row)`
   margin-left: 25px;
 `;
 export default Visualizer;
-// -sds6fffrfnulabscrcboom;

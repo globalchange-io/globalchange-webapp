@@ -87,8 +87,10 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                             resp.records[0].amount * Math.pow(10, 7) ===
                             50 + artOutComeLevel[k]
                           ) {
-                            memoTransactions.push(tran[i]);
-                            console.log(tran[i]);
+                            memoTransactions.push({
+                              data: tran[i],
+                              address: accounts[j].address,
+                            });
                           }
                         }
                       }
@@ -115,8 +117,10 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
                               resp.records[0].amount * Math.pow(10, 7) ===
                               50 + artOutComeLevel[k]
                             ) {
-                              memoTransactions.push(tran[i]);
-                              console.log(tran[i]);
+                              memoTransactions.push({
+                                data: tran[i],
+                                address: accounts[j].address,
+                              });
                             }
                           }
                         }
@@ -132,30 +136,29 @@ const ArtImage = async (artOutComeNumber, artOutComeLevel, flag) => {
         }
         let trans = [];
         for (let i = 0; i < memoTransactions.length; i++) {
-          const object1 = memoTransactions[i];
+          const object1 = memoTransactions[i].data;
           const isNameRepeated = arr2.some(
             (object2) => object2 === object1.memo
           );
 
           if (!isNameRepeated) {
-            console.log(object1, isNameRepeated, "Asdfadsfsdfsdaf");
-            trans.push(object1);
+            trans.push(memoTransactions[i]);
           }
         }
         const sortedTransactions = trans.sort(
-          (a, b) => a.paging_token - b.paging_token
+          (a, b) => a.data.paging_token - b.data.paging_token
         );
         const templength = digits_count(trans.length);
         const artcycle = artOutComeNumber[k].slice(
           artOutComeNumber[k].length - +templength
         );
-        arr3.push(sortedTransactions);
+        console.log(sortedTransactions, "sortedTransactions");
         await Promise.all(
           sortedTransactions.map(async (items, key) => {
-            console.log(artcycle % sortedTransactions.length, "ASdfasdf");
             if (key + 1 === +artcycle % sortedTransactions.length) {
               console.log(+artcycle % sortedTransactions.length, "ASdfasdf");
-              await layerGifOnImage(items.memo).then((res) => {
+              arr3.push(items.address);
+              await layerGifOnImage(items.data.memo).then((res) => {
                 arr.push(res);
               });
             }
