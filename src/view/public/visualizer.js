@@ -56,6 +56,7 @@ const Visualizer = () => {
       let operationdata = [];
       data.map((item) => {
         addressdata.filter((address) => {
+          console.log(address);
           if (item.account === address.value) {
             operationdata.push(address.name);
           }

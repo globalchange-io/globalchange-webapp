@@ -13,6 +13,7 @@ import Special from "./specialnft";
 import Sendart from "./sendgc";
 import Upload from "./upload";
 import Visualizer from "./visualizer";
+import SmartWallet from "./smartwallet";
 const PublicPage = () => {
   return (
     <>
@@ -22,7 +23,7 @@ const PublicPage = () => {
         <Route path={Public_Upload} element={<Upload />} />
         <Route path={Public_Send} element={<Sendart />} />
         <Route path={Public_Visualizer} element={<Visualizer />} />
-        <Route path={Public_Wallet} element={<Visualizer />} />
+        <Route path={Public_Wallet} element={<SmartWallet />} />
         <Route path="/*" element={<Error />} />
       </Routes>
     </>

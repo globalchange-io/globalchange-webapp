@@ -385,43 +385,7 @@ const Pay = () => {
             </Col2>
           </CardContainer>
         </Dashboard2>
-        <Dashboard2>
-          <Title>My SmartWallet</Title>
-          <TextContainer2>
-            {inputInfo.accountKey ? (
-              <>
-                Total face value: 5421.55 GC{" "}
-                <span>Public Nickname: Alamgi43</span>
-              </>
-            ) : (
-              <>
-                No account linked{" "}
-                <span>
-                  Enter Stellar Lumens account no. at the top of this page{" "}
-                </span>
-              </>
-            )}
-          </TextContainer2>
-          {inputInfo.accountKey && (
-            <>
-              <Title>My GC</Title>
-              <MygcWrapper>
-                <Mygc title="Spendable" text="Face value balance: 850.55 GC" />
-                <Line />
-                <Mygc
-                  title="Vault(collection)"
-                  text="Face value balance: 4500 GC"
-                />
-                <Line />
-                <Mygc title="My Auctions" text="Face value balance: 71 GC" />
-              </MygcWrapper>
-              <Title>My Map</Title>
-              <Map />
-              <Title>My Feed</Title>
-              <FeedIndex />
-            </>
-          )}
-        </Dashboard2>
+
         <Dashboard4>
           <Title>Check or claim printed bill</Title>
           <TextContainer2>

@@ -114,6 +114,7 @@ export const getOperation = async (transactionHash) => {
       const data = response.records.filter(
         (item) => item.type === "account_credited" && item.account
       );
+      console.log(data, "Data");
       return data;
     })
     .catch((error) => {
