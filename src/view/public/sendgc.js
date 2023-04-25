@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Column, Row } from "../../components/element";
+import { Column } from "../../components/element";
 import { useState } from "react";
 import Button from "../../components/element/button";
 

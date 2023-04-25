@@ -107,15 +107,6 @@ const Pay = () => {
     ]);
   };
 
-  const handleClick = async () => {
-    const data = await artOutCome(inputInfo.checkbill);
-    navigate(Public_Special, {
-      state: {
-        data: data,
-      },
-    });
-  };
-
   const mine = async () => {
     // found the next 3 lines online, lost the source - makes an array from the checked checkboxes
     const account = await server.loadAccount(sourcePublicKey);
@@ -386,33 +377,6 @@ const Pay = () => {
           </CardContainer>
         </Dashboard2>
 
-        <Dashboard4>
-          <Title>Check or claim printed bill</Title>
-          <TextContainer2>
-            <>Has someone given you a printed GlobalChange bill? </>
-            <span>
-              Comfirm if it is currently valid and locked on the network; and
-              enter its password to sweep it to your account.
-            </span>
-          </TextContainer2>
-          <Text>Enter bill’s serial number to check its status</Text>
-          <CheckBill>
-            <>SN</>
-            <ConnectInput
-              onChange={getInfo}
-              value={inputInfo.checkbill}
-              name="checkbill"
-            />
-          </CheckBill>
-          <Button onClick={handleClick}>Check Bill</Button>
-          <Title>Claim printed bill</Title>
-          <TextContainer2>
-            <>No account linked </>
-            <span>
-              Enter Stellar Lumens account no. at the top of this page
-            </span>
-          </TextContainer2>
-        </Dashboard4>
         <Modal open={visible} onClose={closeHandler} width="800px">
           <Modal.Header
             css={{ position: "absolute", zIndex: "$1", top: 5, right: 8 }}
@@ -504,11 +468,6 @@ const Dashboard2 = styled(Column)`
   padding-bottom: 30px;
 `;
 
-const Dashboard4 = styled(Dashboard2)`
-  border: 0;
-  padding: 0px;
-`;
-
 const TextColor = styled.div`
   color: #1b5e76;
 `;
@@ -549,11 +508,6 @@ const ImageGroup = styled(Column)`
   gap: 10px;
 `;
 
-const CheckBill = styled(Row)`
-  gap: 20px;
-  width: 100%;
-`;
-
 const ConnectInput = styled.input`
   max-width: 1000px;
   width: 100%;
@@ -573,18 +527,6 @@ const Col2 = styled(Column)`
   padding: 10px;
   font-size: 12px;
   align-items: flex-start;
-`;
-
-const MygcWrapper = styled(Row)`
-  gap: 20px;
-  width: 100%;
-  margin: auto;
-`;
-
-const Line = styled.div`
-  width: 1px;
-  height: 100%;
-  background-color: black;
 `;
 
 const TextContainer = styled(Row)`

@@ -4,6 +4,10 @@ import Mygc from "../../components/mygc";
 import Map from "../../components/map";
 import FeedIndex from "../../components/Feed";
 import { useState } from "react";
+import Button from "../../components/element/button";
+import { artOutCome } from "../../utills";
+import { Navigate } from "react-router-dom";
+import { Public_Special } from "../../config";
 
 const SmartWallet = () => {
   const [inputInfo, setInputInfo] = useState({
@@ -14,6 +18,17 @@ const SmartWallet = () => {
     secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     newnonprofitname: "",
   });
+  const handleClick = async () => {
+    const data = await artOutCome(inputInfo.checkbill);
+    Navigate(Public_Special, {
+      state: {
+        data: data,
+      },
+    });
+  };
+  const getInfo = (e) => {
+    setInputInfo({ ...inputInfo, [e.target.name]: e.target.value });
+  };
 
   return (
     <Wrapper>
@@ -51,6 +66,31 @@ const SmartWallet = () => {
           <FeedIndex />
         </>
       )}
+      <Dashboard2>
+        <Title>Check or claim printed bill</Title>
+        <TextContainer2>
+          <>Has someone given you a printed GlobalChange bill? </>
+          <span>
+            Comfirm if it is currently valid and locked on the network; and
+            enter its password to sweep it to your account.
+          </span>
+        </TextContainer2>
+        <Text>Enter bill’s serial number to check its status</Text>
+        <CheckBill>
+          <>SN</>
+          <ConnectInput
+            onChange={getInfo}
+            value={inputInfo.checkbill}
+            name="checkbill"
+          />
+        </CheckBill>
+        <Button onClick={handleClick}>Check Bill</Button>
+        <Title>Claim printed bill</Title>
+        <TextContainer2>
+          <>No account linked </>
+          <span>Enter Stellar Lumens account no. at the top of this page</span>
+        </TextContainer2>
+      </Dashboard2>
     </Wrapper>
   );
 };
@@ -83,4 +123,24 @@ const Line = styled.div`
   height: 100%;
   background-color: black;
 `;
+const Dashboard2 = styled(Wrapper)`
+  border: 0;
+  padding: 0px;
+`;
+const CheckBill = styled(Row)`
+  gap: 20px;
+  width: 100%;
+`;
+const ConnectInput = styled.input`
+  max-width: 1000px;
+  width: 100%;
+  padding: 10px;
+  background-color: #dcdfdf;
+`;
+const Text = styled(Row)`
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 24px;
+`;
+
 export default SmartWallet;

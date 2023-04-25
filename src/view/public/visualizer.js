@@ -6,6 +6,7 @@ import styled from "styled-components";
 import {
   artOutCome,
   getOperation,
+  getTransactions,
   ImageCheck,
   ScarcityLevel,
 } from "../../utills";
@@ -20,7 +21,6 @@ const Visualizer = () => {
   const [alldata, setAllData] = useState();
   const [operationData, setOperationData] = useState();
   const [scarcitylevelvalue, setScarcityLevel] = useState();
-  const [artList, setArtList] = useState();
   const handleClick = async () => {
     const res = await artOutCome(bill);
     let artOutComeNumber = [];
@@ -37,34 +37,32 @@ const Visualizer = () => {
       "artOutComeNumber",
       artOutComeNumber
     );
-    if (artOutComeLevel[0] !== 0) {
-      ArtImage(artOutComeNumber, artOutComeLevel, res.flag).then((res) => {
-        addressdata.filter((address) => {
-          if (res[0].artlistdata[0] === address.value) {
-            setOperationData(address.name);
-          }
-        });
-        setAllData(res[0].alldata[0]);
-        console.log(
-          res,
-          "image url array... if app didn't find url, in modal it output question mark image with some info. "
-        );
+    const data = await getTransactions(res?.account);
+    const regex = /\d+$/;
+    const match = res.allmemo.match(regex);
+    let operationdata = [];
+    const operation = data.filter(
+      (item) => item.source_account_sequence === match[0]
+    );
+    ArtImage(artOutComeNumber, artOutComeLevel, res.flag).then((res) => {
+      setAllData(res[0].alldata[0]);
+      console.log(
+        res,
+        "image url array... if app didn't find url, in modal it output question mark image with some info. "
+      );
+    });
+    const operationALL = await getOperation(operation[0].hash);
+    operationALL.map((item) => {
+      addressdata.filter((address) => {
+        console.log(address);
+        if (item.account === address.value) {
+          operationdata.push(address.name);
+        }
       });
-    } else {
-      const data = await getOperation(bill);
-      console.log(data, "Datasa");
-      let operationdata = [];
-      data.map((item) => {
-        addressdata.filter((address) => {
-          console.log(address);
-          if (item.account === address.value) {
-            operationdata.push(address.name);
-          }
-        });
-      });
-      setOperationData(operationdata);
-    }
+    });
+    setOperationData(operationdata);
   };
+
   return (
     <Wrapper>
       <BillInput>
@@ -80,24 +78,24 @@ const Visualizer = () => {
         Bill's Serial Number (new) :
         6b1bc7715a56d6b1b57c69613a85246f37daf3ed58a245d3634c3472087b0fe0
       </div> */}
-      <div>Account that minted bill : {allinfo?.account}</div>
-      <div>Bill's memo : {allinfo?.allmemo}</div>
-      <div>Bill's denomination : {allinfo?.memoname}</div>
-      <div>Bill's sequence number: {allinfo?.sequence}</div>
-      <div>Bill's ledger #: {allinfo?.redger}</div>
-      <div>Bill's ledger's hash: {allinfo?.redgerhash}</div>
-      <div>Bill's ArtSeed: {allinfo?.billartseed}</div>
-      <div>ArtOutcome: {allinfo?.numbersOnly}</div>
-      <div>Bill's Scarcity Level: {scarcitylevelvalue}</div>
+      <Row>Account that minted bill : {allinfo?.account}</Row>
+      <Row>Bill's memo : {allinfo?.allmemo}</Row>
+      <Row>Bill's denomination : {allinfo?.memoname}</Row>
+      <Row>Bill's sequence number: {allinfo?.sequence}</Row>
+      <Row>Bill's ledger #: {allinfo?.redger}</Row>
+      <Row>Bill's ledger's hash: {allinfo?.redgerhash}</Row>
+      <Row>Bill's ArtSeed: {allinfo?.billartseed}</Row>
+      <Row>ArtOutcome: {allinfo?.numbersOnly}</Row>
+      <Row>Bill's Scarcity Level: {scarcitylevelvalue}</Row>
       {scarcitylevelvalue === 0 ? (
         <>
           Background Image :
           <DefaultImage
             src={ImageCheck(allinfo?.memoname.replace(/[a-z]/gi, ""), 1)}
           />
-          <div>Date :{allinfo?.created_at}</div>
-          <div>Serial Number : {bill}</div>
-          <div>
+          <Row>Date :{allinfo?.created_at}</Row>
+          <Row>Serial Number : {bill}</Row>
+          <Row>
             Image :
             <DefaultImage
               src={ImageCheck(
@@ -105,9 +103,9 @@ const Visualizer = () => {
                 scarcitylevelvalue
               )}
             />
-          </div>
+          </Row>
           Artist Name: Rian Firdaus
-          <div>
+          <Row>
             Title of Art:
             {CoinData.map(
               (item, key) =>
@@ -116,13 +114,13 @@ const Visualizer = () => {
                   <Row key={key}>{item.title}</Row>
                 )
             )}
-          </div>
+          </Row>
           <ImageContainer
             memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
             level={99}
           >
             <ImageWrapper>
-              <Row>{bill}</Row>
+              <BillWrapper>{bill}</BillWrapper>
               <ImageGroup2>
                 <DateContainer>
                   {new Date(allinfo?.created_at).getFullYear()}
@@ -141,7 +139,7 @@ const Visualizer = () => {
                   </TokenEditor>
                 </DetailWrapper>
               </ImageGroup2>
-              <Column>
+              <ArtistWrapper>
                 <Text>
                   {CoinData.map(
                     (item, key) =>
@@ -152,42 +150,46 @@ const Visualizer = () => {
                   )}
                 </Text>
                 <Text> {"Rian Firdaus"}</Text>
-              </Column>
+              </ArtistWrapper>
             </ImageWrapper>
           </ImageContainer>
         </>
       ) : (
         <>
-          <div>
+          <Row>
             Background Image :
             <DefaultImage
               src={ImageCheck(allinfo?.memoname.replace(/[a-z]/gi, ""), 1)}
             />
-          </div>
-          <div>Date :{allinfo?.created_at}</div>
-          <div>Serial Number : {bill}</div>
-          <div>Image :{alldata?.jpgfile}</div>
-          <div>Artist Name: {alldata?.artistname}</div>
-          <div>Title of Art (from JSON) : {alldata?.title}</div>
+          </Row>
+          <Row>Date :{allinfo?.created_at}</Row>
+          <Row>Serial Number : {bill}</Row>
+          <Row>Image :{alldata?.jpgfile}</Row>
+          <Row>Artist Name: {alldata?.artistname}</Row>
+          <Row>Title of Art (from JSON) : {alldata?.title}</Row>
           <ImageContainer
             memoname={allinfo?.memoname.replace(/[a-z]/gi, "")}
             level={99}
           >
             <ImageWrapper>
-              <Row>{bill}</Row>
+              <BillWrapper>{bill}</BillWrapper>
               <ImageGroup2>
                 <DateContainer>
                   {new Date(allinfo?.created_at).getFullYear()}
                 </DateContainer>
                 <DefaultImage src={alldata?.jpgfile} />
                 <DetailWrapper>
-                  <TokenEditor>{operationData && operationData}</TokenEditor>
+                  <TokenEditor>
+                    {operationData?.map((item, key) => (
+                      <Row key={key}>{item}</Row>
+                    ))}
+                  </TokenEditor>
                 </DetailWrapper>
               </ImageGroup2>
-              <Column>
+              <ArtistWrapper>
                 <Text>{alldata?.title} &nbsp; </Text>
                 <Text> {alldata?.artistname}&nbsp; </Text>
-              </Column>
+              </ArtistWrapper>
             </ImageWrapper>
           </ImageContainer>
           {/* <>
@@ -227,39 +229,44 @@ const ImageContainer = styled(Row)`
   overflow-y: auto;
 `;
 const ImageWrapper = styled(Column)`
-  font-size: 12px;
-  color: #ffffff;
-  justify-content: space-between;
-  width: 100%;
-  gap: 90px;
-`;
-const DetailWrapper = styled(Column)`
-  gap: 5px;
-  align-items: flex-start;
-  max-width: 100px;
-  width: 100%;
-`;
-const TokenEditor = styled(Column)`
-  gap: 4px;
   font-size: 14px;
   color: #ffffff;
+  justify-content: center;
+  width: 100%;
+`;
+const DetailWrapper = styled(Column)`
   align-items: flex-start;
+  position: absolute;
+  margin-left: 480px;
+  width: 150px;
+`;
+const TokenEditor = styled(Column)`
+  font-size: 16px;
+  align-items: flex-end;
+  text-align: end;
+  color: white;
+  gap: 10px;
 `;
 const ImageGroup2 = styled(Row)`
-  gap: 90px;
-  img {
-    margin-left: 50px;
-  }
+  position: relative;
+  justify-content: center;
 `;
 
 const Text = styled(Row)`
-  font-size: 9px;
-  color: white;
+  font-size: 11px;
 `;
 const DateContainer = styled(Row)`
-  font-size: 12px;
-  color: white;
-  margin-top: 110px;
-  margin-left: 25px;
+  font-size: 17px;
+  margin-top: 120px;
+  margin-left: -450px;
+  position: absolute;
+`;
+const BillWrapper = styled(Row)`
+  position: absolute;
+  margin-top: -340px;
+`;
+const ArtistWrapper = styled(Column)`
+  position: absolute;
+  margin-top: 335px;
 `;
 export default Visualizer;
