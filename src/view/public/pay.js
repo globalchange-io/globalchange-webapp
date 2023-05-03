@@ -3,9 +3,6 @@ import { Column, DefaultImage, Row } from "../../components/element";
 import { Loading, Modal } from "@nextui-org/react";
 import Button from "../../components/element/button";
 import CardContent from "../../components/card";
-import Mygc from "../../components/mygc";
-import Map from "../../components/map";
-import FeedIndex from "../../components/Feed";
 import { useState, useEffect } from "react";
 import {
   Keypair,
@@ -20,8 +17,6 @@ import axios from "axios";
 import { Buffer } from "buffer";
 import SelectBox from "../../components/select";
 import { arrayKill, artOutCome, ImageCheck, ScarcityLevel } from "../../utills";
-import { useNavigate } from "react-router-dom";
-import { Public_Special } from "../../config";
 import ArtImage from "../../components/artimage";
 import { useAlert } from "react-alert";
 import Analog from "../../components/analog";
@@ -32,7 +27,6 @@ window.Buffer = Buffer;
 
 const Pay = () => {
   const alert = useAlert();
-  const navigate = useNavigate();
   const [total, setTotal] = useState([]);
   const [xlmusd, setXlmusd] = useState(0.092011);
   const [nonprofit, setNonprofit] = useState([]);
@@ -49,7 +43,6 @@ const Pay = () => {
   const [inputInfo, setInputInfo] = useState({
     checkbill: "",
     accountKey: "GDH3J2SBCKF6KN2IPXQYIZZFF3W4EEIWD57DEJQDQ4YXRT3JHW66HWXL",
-    oldnonprofit: "",
     newnonprofit: "",
     secretKey: "SBSJCNHNG7HSAKPP2K5Y2FGZXDLJMDWTVUTH3LKXB5TZUPWA2YTGORJG",
     newnonprofitname: "",
@@ -79,10 +72,17 @@ const Pay = () => {
     setSendEachActual((tempxml / 5).toFixed(7).toString());
   }, [currentCPI, total, totalGC, totalXLM, xlmusd]);
 
+  useEffect(() => {
+    const address = JSON.parse(localStorage.getItem("addressdata"));
+    if (!!address) {
+      setNonprofitDetail(address);
+    }
+  }, [localStorage.getItem("addressdata")]);
+
   const getStellarPrice = async () => {
     try {
       const res = await axios.get(
-        "https://data.nasdaq.com/api/v3/datasets/RATEINF/CPI_USA.json?api_key=wnCn-hUnqgqwpjzEa9bM"
+        "https://data.nasdaq.com/api/v3/datasets/RATEINF/CPI_USA.json?api_key=syF9WhdED8JYeRzP3UNz"
       );
       setCurrentCPI(res.data.dataset.data[0][1]);
       const response = await axios.get(
@@ -99,12 +99,17 @@ const Pay = () => {
     setTotal([...total, { name: name, value: counter }]);
   };
 
-  const changeNonprofit = () => {
-    arrayKill(nonprofitDetail, inputInfo.oldnonprofit, "name");
-    setNonprofitDetail([
+  const addNonprofit = () => {
+    // arrayKill(nonprofitDetail, inputInfo.oldnonprofit, "name");
+    let data = [
       ...nonprofitDetail,
-      { address: inputInfo.newnonprofit, name: inputInfo.newnonprofitname },
-    ]);
+      {
+        name: inputInfo.newnonprofitname,
+        value: inputInfo.newnonprofit,
+      },
+    ];
+    localStorage.setItem("addressdata", JSON.stringify(data));
+    setNonprofit(data);
   };
 
   const mine = async () => {
@@ -344,12 +349,14 @@ const Pay = () => {
                   xlmusd={xlmusd}
                 />
               </Col>
-              <Text> Old nonprofit name to replace</Text>
+              <Text> Add CurrentCPI(Manual)</Text>
               <ConnectInput
-                onChange={getInfo}
-                value={inputInfo.oldnonprofit}
-                name="oldnonprofit"
+                onChange={(e) => {
+                  setCurrentCPI(e.target.value);
+                }}
+                value={currentCPI}
               />
+
               <Text>Enter new nonprofit name</Text>
               <ConnectInput
                 onChange={getInfo}
@@ -362,7 +369,7 @@ const Pay = () => {
                 value={inputInfo.newnonprofit}
                 name="newnonprofit"
               />
-              <Button onClick={changeNonprofit}>Save</Button>
+              <Button onClick={addNonprofit}>Save</Button>
               <Text>
                 3. Enter your Stellar Lumens account private key OR leave blank
                 to connect wallet (Freighter)
@@ -533,10 +540,6 @@ const TextContainer = styled(Row)`
   gap: 10px;
 `;
 
-const TextContainer2 = styled(Col)`
-  gap: 10px;
-  height: 100px;
-`;
 const ImageContainer = styled(Row)`
   background-image: ${(props) =>
     `url(${ImageCheck(props.memoname, props.level)})`};

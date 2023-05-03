@@ -105,6 +105,7 @@ export const artOutCome = async (checkbill) => {
       console.error(err);
     });
 };
+
 export const getOperation = async (transactionHash) => {
   return await server
     .effects()
